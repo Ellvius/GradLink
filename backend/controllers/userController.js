@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const { Op } = require('sequelize');
+const bcrypt = require('bcryptjs');
 const { generateAuthToken } = require('../middleware/authMiddleware');
 
 class UserController {
@@ -7,9 +8,7 @@ class UserController {
   async getUserProfile(req, res) {
     try {
       const user = await User.findByPk(req.user.id, {
-        attributes: { 
-          exclude: ['password'] 
-        }
+        attributes: { exclude: ['password'] }
       });
 
       if (!user) {
@@ -28,7 +27,6 @@ class UserController {
       const { username, email } = req.body;
 
       const user = await User.findByPk(req.user.id);
-
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -36,24 +34,18 @@ class UserController {
       // Check if new username or email already exists
       const existingUser = await User.findOne({
         where: {
-          [Op.or]: [
-            { username: username || user.username },
-            { email: email || user.email }
-          ],
+          [Op.or]: [{ username }, { email }],
           id: { [Op.ne]: user.id }
         }
       });
 
       if (existingUser) {
-        return res.status(400).json({ 
-          error: 'Username or email already in use' 
-        });
+        return res.status(400).json({ error: 'Username or email already in use' });
       }
 
       // Update user fields
       user.username = username || user.username;
       user.email = email || user.email;
-
       await user.save();
 
       res.json({
@@ -73,20 +65,18 @@ class UserController {
       const { currentPassword, newPassword } = req.body;
 
       const user = await User.findByPk(req.user.id);
-
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
 
       // Verify current password
       const isMatch = await user.validatePassword(currentPassword);
-
       if (!isMatch) {
         return res.status(400).json({ error: 'Current password is incorrect' });
       }
 
-      // Update password
-      user.password = newPassword;
+      // Hash new password before saving
+      user.password = await bcrypt.hash(newPassword, 10);
       await user.save();
 
       res.json({ message: 'Password updated successfully' });
@@ -99,7 +89,6 @@ class UserController {
   async deactivateAccount(req, res) {
     try {
       const user = await User.findByPk(req.user.id);
-
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -119,23 +108,27 @@ class UserController {
   // List all users (admin only)
   async listUsers(req, res) {
     try {
-      const { page = 1, limit = 10, role } = req.query;
+      let { page = 1, limit = 10, role } = req.query;
       
+      // Ensure `page` and `limit` are numbers with reasonable defaults
+      const pageNumber = Math.max(parseInt(page) || 1, 1);
+      const limitNumber = Math.min(Math.max(parseInt(limit) || 10, 1), 100);
+
       const whereClause = role ? { role } : {};
 
       const users = await User.findAndCountAll({
         where: whereClause,
         attributes: { exclude: ['password'] },
-        limit: parseInt(limit),
-        offset: (page - 1) * limit,
+        limit: limitNumber,
+        offset: (pageNumber - 1) * limitNumber,
         order: [['createdAt', 'DESC']]
       });
 
       res.json({
-        users: users.rows,
+        users: users.rows || [],
         totalUsers: users.count,
-        totalPages: Math.ceil(users.count / limit),
-        currentPage: page
+        totalPages: Math.ceil(users.count / limitNumber),
+        currentPage: pageNumber
       });
     } catch (error) {
       res.status(500).json({ error: error.message });

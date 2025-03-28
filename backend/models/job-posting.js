@@ -1,6 +1,6 @@
 // models/job-posting.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const { sequelize } = require('../config/database');
 
 const JobPosting = sequelize.define('JobPosting', {
     id: {
