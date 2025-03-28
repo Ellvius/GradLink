@@ -4,7 +4,7 @@ const alumniController = require('../controllers/alumniController');
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 
-router.use(authMiddleware);
+router.use(authMiddleware.authenticateUser);
 router.use(roleMiddleware(['alumni']));
 
 router.post('/profile', alumniController.createOrUpdateProfile);
