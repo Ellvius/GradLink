@@ -181,6 +181,19 @@ class EventController {
       res.status(500).json({ error: error.message });
     }
   }
+
+  // List all the events
+  async getAllEvents(req, res) {
+    try {
+      const events = await Event.findAll({
+        order: [['date', 'ASC']]
+      });
+      res.json(events);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  
 }
 
 module.exports = new EventController();
