@@ -186,13 +186,14 @@ class EventController {
   async getAllEvents(req, res) {
     try {
       const events = await Event.findAll({
-        order: [['date', 'ASC']]
+        order: [['startDateTime', 'ASC']] // ✅ Fix
       });
       res.json(events);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   }
+  
   
 }
 

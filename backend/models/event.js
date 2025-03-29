@@ -1,4 +1,3 @@
-// models/event.js
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
@@ -16,7 +15,11 @@ const Event = sequelize.define('Event', {
         type: DataTypes.TEXT,
         allowNull: false
     },
-    date: {
+    startDateTime: {
+        type: DataTypes.DATE,
+        allowNull: false
+    },
+    endDateTime: {
         type: DataTypes.DATE,
         allowNull: false
     },
@@ -24,8 +27,12 @@ const Event = sequelize.define('Event', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    organizer: {
-        type: DataTypes.STRING,
+    capacity: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    createdBy: {
+        type: DataTypes.UUID,
         allowNull: false
     }
 }, {
