@@ -1,4 +1,3 @@
-// models/job-posting.js
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
@@ -8,11 +7,15 @@ const JobPosting = sequelize.define('JobPosting', {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
     },
-    title: {
+    companyName: { // Renamed from "company" to match the controller
         type: DataTypes.STRING,
         allowNull: false
     },
-    company: {
+    jobTitle: { // Renamed from "title"
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    jobType: { // Added to match the controller
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -31,6 +34,19 @@ const JobPosting = sequelize.define('JobPosting', {
     applicationLink: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    expirationDate: { // Added to match the controller
+        type: DataTypes.DATE,
+        allowNull: false
+    },
+    postedBy: { // Added to match the controller
+        type: DataTypes.UUID,
+        allowNull: false
+    },
+    status: { // Added to match the controller
+        type: DataTypes.ENUM('active', 'closed'),
+        allowNull: false,
+        defaultValue: 'active'
     }
 }, {
     timestamps: true

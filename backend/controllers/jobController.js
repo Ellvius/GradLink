@@ -1,18 +1,21 @@
 const JobPosting = require('../models/job-posting');
 const { Op } = require('sequelize');
+const User = require('../models/user');
+const Application = require('../models/application'); 
 
 class JobController {
   // Create Job Posting (Alumni)
   async createJobPosting(req, res) {
     try {
       const {
-        companyName,
-        jobTitle,
+        companyName,  // Matches model
+        jobTitle,     // Matches model
         description,
         requirements,
         location,
-        jobType,
-        expirationDate
+        jobType,      // Matches model
+        expirationDate,
+        applicationLink
       } = req.body;
 
       const jobPosting = await JobPosting.create({
@@ -22,91 +25,15 @@ class JobController {
         requirements,
         location,
         jobType,
-        postedBy: req.user.id,
-        postingDate: new Date(),
+        postedBy: req.User.id,
         expirationDate,
+        applicationLink,
         status: 'active'
       });
 
       res.status(201).json(jobPosting);
     } catch (error) {
       res.status(400).json({ error: error.message });
-    }
-  }
-
-  // Search and List Job Postings
-  async listJobPostings(req, res) {
-    try {
-      const { 
-        search, 
-        jobType, 
-        location, 
-        page = 1, 
-        limit = 10 
-      } = req.query;
-
-      const whereClause = {
-        status: 'active',
-        expirationDate: { [Op.gt]: new Date() }
-      };
-
-      if (search) {
-        whereClause[Op.or] = [
-          { companyName: { [Op.iLike]: `%${search}%` } },
-          { jobTitle: { [Op.iLike]: `%${search}%` } },
-          { description: { [Op.iLike]: `%${search}%` } }
-        ];
-      }
-
-      if (jobType) {
-        whereClause.jobType = jobType;
-      }
-
-      if (location) {
-        whereClause.location = { [Op.iLike]: `%${location}%` };
-      }
-
-      const jobPostings = await JobPosting.findAndCountAll({
-        where: whereClause,
-        limit: parseInt(limit),
-        offset: (page - 1) * limit,
-        order: [['postingDate', 'DESC']],
-        include: [{
-          model: User,
-          as: 'poster',
-          attributes: ['username', 'email']
-        }]
-      });
-
-      res.json({
-        jobPostings: jobPostings.rows,
-        totalJobPostings: jobPostings.count,
-        totalPages: Math.ceil(jobPostings.count / limit),
-        currentPage: page
-      });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-
-  // Get Job Posting Details
-  async getJobPostingDetails(req, res) {
-    try {
-      const jobPosting = await JobPosting.findByPk(req.params.jobId, {
-        include: [{
-          model: User,
-          as: 'poster',
-          attributes: ['username', 'email']
-        }]
-      });
-
-      if (!jobPosting) {
-        return res.status(404).json({ error: 'Job posting not found' });
-      }
-
-      res.json(jobPosting);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
     }
   }
 
@@ -121,6 +48,7 @@ class JobController {
         location,
         jobType,
         expirationDate,
+        applicationLink,
         status
       } = req.body;
 
@@ -131,10 +59,11 @@ class JobController {
       }
 
       // Ensure only the poster or an admin can update
-      if (jobPosting.postedBy !== req.user.id && req.user.role !== 'admin') {
+      if (jobPosting.postedBy.toString() !== req.User.id.toString() && req.User.role !== 'admin') {
         return res.status(403).json({ error: 'Unauthorized to update this job posting' });
-      }
+    }
 
+      // Apply changes
       jobPosting.companyName = companyName || jobPosting.companyName;
       jobPosting.jobTitle = jobTitle || jobPosting.jobTitle;
       jobPosting.description = description || jobPosting.description;
@@ -142,6 +71,7 @@ class JobController {
       jobPosting.location = location || jobPosting.location;
       jobPosting.jobType = jobType || jobPosting.jobType;
       jobPosting.expirationDate = expirationDate || jobPosting.expirationDate;
+      jobPosting.applicationLink = applicationLink || jobPosting.applicationLink;
       jobPosting.status = status || jobPosting.status;
 
       await jobPosting.save();
@@ -152,53 +82,67 @@ class JobController {
     }
   }
 
-  // Delete Job Posting (Alumni/Admin)
-  async deleteJobPosting(req, res) {
+  async listJobPostings(req, res) {
     try {
-      const jobPosting = await JobPosting.findByPk(req.params.jobId);
+      const jobs = await JobPosting.findAll({
+        include: [{ model: User, as: 'poster', attributes: ['id', 'username', 'email'] }],
+      });
+      res.json(jobs);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+
+  // Get details of a specific job posting (Newly added)
+  async getJobPostingDetails(req, res) {
+    try {
+      const jobPosting = await JobPosting.findByPk(req.params.jobId, {
+        include: [{ model: User, as: 'poster', attributes: ['id', 'username', 'email'] }],
+      });
 
       if (!jobPosting) {
         return res.status(404).json({ error: 'Job posting not found' });
       }
 
-      // Ensure only the poster or an admin can delete
-      if (jobPosting.postedBy !== req.user.id && req.user.role !== 'admin') {
-        return res.status(403).json({ error: 'Unauthorized to delete this job posting' });
-      }
-
-      await jobPosting.destroy();
-
-      res.json({ message: 'Job posting deleted successfully' });
+      res.json(jobPosting);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
   }
 
-  // Job Posting Statistics (Admin)
-  async getJobPostingStatistics(req, res) {
+  async applyForJob(req, res) {
     try {
-      const totalJobPostings = await JobPosting.count();
-      const activeJobPostings = await JobPosting.count({ 
-        where: { 
-          status: 'active',
-          expirationDate: { [Op.gt]: new Date() }
-        } 
+      const userId = req.User.id; // Get logged-in user ID
+      const { jobId } = req.body; // Get job ID from request
+  
+      // 1. Ensure the user is a student
+      if (req.User.role !== 'student') {
+        return res.status(403).json({ error: 'Only students can apply for jobs' });
+      }
+  
+      // 2. Check if the job exists
+      const job = await JobPosting.findByPk(jobId);
+      if (!job) {
+        return res.status(404).json({ error: 'Job posting not found' });
+      }
+  
+      // 3. Prevent duplicate applications
+      const existingApplication = await Application.findOne({
+        where: { studentId: userId, jobId }
       });
-
-      const jobTypeStats = await JobPosting.findAll({
-        attributes: [
-          'jobType',
-          [sequelize.fn('COUNT', sequelize.col('id')), 'count']
-        ],
-        group: ['jobType'],
-        order: [[sequelize.col('count'), 'DESC']]
+  
+      if (existingApplication) {
+        return res.status(400).json({ error: 'You have already applied for this job' });
+      }
+  
+      // 4. Create a new application
+      const application = await Application.create({
+        studentId: userId,
+        jobId
       });
-
-      res.json({
-        totalJobPostings,
-        activeJobPostings,
-        jobTypeStats
-      });
+  
+      res.status(201).json(application);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

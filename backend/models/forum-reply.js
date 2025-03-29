@@ -1,40 +1,36 @@
-// models/forum.js
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
+const ForumTopic = require('./forum-topic');
 const User = require('./user');
 
-const Forum = sequelize.define('Forum', {
+const ForumReply = sequelize.define('ForumReply', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
     },
-    userId: {
+    topicId: {
         type: DataTypes.UUID,
         references: {
-            model: User,
+            model: ForumTopic,
             key: 'id'
         },
-        allowNull: false
-    },
-    title: {
-        type: DataTypes.STRING,
         allowNull: false
     },
     content: {
         type: DataTypes.TEXT,
         allowNull: false
     },
-    status: {
-        type: DataTypes.ENUM('active', 'inactive'),
-        defaultValue: 'active'
-    },
-    timestamp: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+    createdBy: {
+        type: DataTypes.UUID,
+        references: {
+            model: User,
+            key: 'id'
+        },
+        allowNull: false
     }
 }, {
     timestamps: true
 });
 
-module.exports = Forum;
+module.exports = ForumReply;
