@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import Navbar from '@/components/Navbar/index';
 
 const TopicPage = () => {
   // State for the topic/post
@@ -57,7 +58,7 @@ const TopicPage = () => {
 
   // Handle posting a new reply
   const handlePostReply = () => {
-    if (newReply.trim() === '') return;
+    if (newReply.trim() === '') return; 
     
     const reply = {
       id: `${replies.length + 1}`,
@@ -77,124 +78,128 @@ const TopicPage = () => {
       reply.id === id ? {...reply, likes: reply.likes + 1} : reply
     ));
   };
-
   return (
-    <div className="mx-auto max-w-4xl p-4">
-      <h1 className="text-2xl font-bold mb-2">{topic.title}</h1>
-      <div className="flex gap-2 mb-4">
-        {topic.tags.map(tag => (
-          <span key={tag} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-            {tag}
-          </span>
-        ))}
-      </div>
+    <div>
+      <Navbar />
       
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-              <span className="text-gray-600 font-bold">{topic.author.charAt(0)}</span>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">{topic.author}</span>
-                <span className="text-gray-500 text-sm">{topic.date}</span>
+      <div className="mx-auto max-w-4xl p-4">
+        <h1 className="text-2xl font-bold mb-2">{topic.title}</h1>
+        <div className="flex gap-2 mb-4">
+          {topic.tags.map(tag => (
+            <span key={tag} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+              {tag}
+            </span>
+          ))}
+        </div>
+        
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                <span className="text-gray-600 font-bold">{topic.author.charAt(0)}</span>
               </div>
-              <p className="mt-2">{topic.content}</p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold">{topic.author}</span>
+                  <span className="text-gray-500 text-sm">{topic.date}</span>
+                </div>
+                <p className="mt-2">{topic.content}</p>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Custom tab navigation */}
-      <div className="flex border-b mb-4">
-        <button 
-          className={`py-2 px-4 ${activeView === 'discussion' ? 'border-b-2 border-blue-500 font-semibold' : 'text-gray-500'}`}
-          onClick={() => setActiveView('discussion')}
-        >
-          Discussion ({replies.length})
-        </button>
-        <button 
-          className={`py-2 px-4 ${activeView === 'related' ? 'border-b-2 border-blue-500 font-semibold' : 'text-gray-500'}`}
-          onClick={() => setActiveView('related')}
-        >
-          Related Topics
-        </button>
-      </div>
-      
-      {/* Discussion view */}
-      {activeView === 'discussion' && (
-        <div className="space-y-4">
-          {replies.map(reply => (
-            <Card key={reply.id} className="mb-4">
+          </CardContent>
+        </Card>
+  
+        {/* Custom tab navigation */}
+        <div className="flex border-b mb-4">
+          <button 
+            className={`py-2 px-4 ${activeView === 'discussion' ? 'border-b-2 border-blue-500 font-semibold' : 'text-gray-500'}`}
+            onClick={() => setActiveView('discussion')}
+          >
+            Discussion ({replies.length})
+          </button>
+          <button 
+            className={`py-2 px-4 ${activeView === 'related' ? 'border-b-2 border-blue-500 font-semibold' : 'text-gray-500'}`}
+            onClick={() => setActiveView('related')}
+          >
+            Related Topics
+          </button>
+        </div>
+        
+        {/* Discussion view */}
+        {activeView === 'discussion' && (
+          <div className="space-y-4">
+            {replies.map(reply => (
+              <Card key={reply.id} className="mb-4">
+                <CardContent className="pt-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                      <span className="text-gray-600 font-bold">{reply.author.charAt(0)}</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">{reply.author}</span>
+                        <span className="text-gray-500 text-sm">{reply.date}</span>
+                      </div>
+                      <p className="mt-2">{reply.content}</p>
+                      <div className="mt-2 flex items-center gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleLike(reply.id)}
+                          className="text-gray-500 hover:text-blue-600"
+                        >
+                          👍 {reply.likes}
+                        </Button>
+                        <Button variant="ghost" size="sm" className="text-gray-500">Reply</Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            
+            <Card>
               <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
+                <div className="flex gap-4">
                   <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                    <span className="text-gray-600 font-bold">{reply.author.charAt(0)}</span>
+                    <span className="text-gray-600 font-bold">C</span>
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">{reply.author}</span>
-                      <span className="text-gray-500 text-sm">{reply.date}</span>
-                    </div>
-                    <p className="mt-2">{reply.content}</p>
-                    <div className="mt-2 flex items-center gap-1">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleLike(reply.id)}
-                        className="text-gray-500 hover:text-blue-600"
-                      >
-                        👍 {reply.likes}
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-500">Reply</Button>
-                    </div>
+                    <Input
+                      placeholder="Share your thoughts or ask a question..."
+                      value={newReply}
+                      onChange={(e) => setNewReply(e.target.value)}
+                      className="mb-2"
+                    />
+                    <Button onClick={handlePostReply}>Post Reply</Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          ))}
-          
+          </div>
+        )}
+        
+        {/* Related topics view */}
+        {activeView === 'related' && (
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex gap-4">
-                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                  <span className="text-gray-600 font-bold">C</span>
-                </div>
-                <div className="flex-1">
-                  <Input
-                    placeholder="Share your thoughts or ask a question..."
-                    value={newReply}
-                    onChange={(e) => setNewReply(e.target.value)}
-                    className="mb-2"
-                  />
-                  <Button onClick={handlePostReply}>Post Reply</Button>
-                </div>
-              </div>
+            <CardHeader>
+              <CardTitle>Related Topics</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {relatedTopics.map((topic, index) => (
+                  <li key={index} className="p-2 hover:bg-gray-100 rounded cursor-pointer">
+                    {topic}
+                  </li>
+                ))}
+              </ul>
             </CardContent>
           </Card>
-        </div>
-      )}
-      
-      {/* Related topics view */}
-      {activeView === 'related' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Related Topics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {relatedTopics.map((topic, index) => (
-                <li key={index} className="p-2 hover:bg-gray-100 rounded cursor-pointer">
-                  {topic}
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      )}
+        )}
+      </div>
     </div>
   );
+  
 };
 
 export default TopicPage;
