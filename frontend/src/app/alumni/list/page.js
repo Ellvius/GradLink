@@ -1,6 +1,8 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import axios from "axios";
-import "../css/Alumni.css";
+import "./Alumni.css";
 
 export default function AlumniList() {
   const [alumni, setAlumni] = useState([]);
