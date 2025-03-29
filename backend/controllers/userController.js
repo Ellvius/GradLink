@@ -4,6 +4,60 @@ const bcrypt = require('bcryptjs');
 const { generateAuthToken } = require('../middleware/authMiddleware');
 
 class UserController {
+
+    async registerUser (req, res) {
+      console.log("registering");
+    try {
+      const { username, email, password, role } = req.body;
+      console.log(role);
+      if (!['student', 'alumni', 'admin'].includes(role)) {
+        return res.status(400).json({ error: 'Invalid role' });
+      }
+  
+      const newUser = await User.create({ username, email, password, role });
+  
+      res.status(201).json({ message: 'User registered successfully', userId: newUser.id, role: newUser.role });
+    } catch (error) {
+      console.error('Registration error:', error);
+      res.status(500).json({ error: 'Failed to register user' });
+    }
+  };
+
+  async loginUser(req, res) {
+    try {
+      const { email, password } = req.body;
+  
+      // Find user by email
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+  
+      // Verify password
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+  
+      // Generate JWT token
+      const token = generateAuthToken(user);
+  
+      res.json({
+        message: "Login successful",
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to login" });
+    }
+  }
+  
+
   // Get user profile
   async getUserProfile(req, res) {
     try {

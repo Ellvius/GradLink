@@ -10,67 +10,35 @@ const MentorshipRequest = require('../models/mentorship-request');
 class AlumniController {
   // Create or Update Alumni Profile
   async createOrUpdateProfile(req, res) {
+    const transaction = await sequelize.transaction();
     try {
       const userId = req.user.id;
-      const {
-        firstName,
-        lastName,
-        gender,
-        dateOfBirth,
-        contactInformation,
-        graduationYear,
-        degreeProgram,
-        major,
-        employmentInformation,
-        profilePicture,
-        socialMediaLinks,
-        privacySettings
-      } = req.body;
-
+  
+      const profileData = req.body;
+  
       const [profile, created] = await AlumniProfile.findOrCreate({
         where: { userId },
-        defaults: {
-          userId,
-          firstName,
-          lastName,
-          gender,
-          dateOfBirth,
-          contactInformation,
-          graduationYear,
-          degreeProgram,
-          major,
-          employmentInformation,
-          profilePicture,
-          socialMediaLinks,
-          privacySettings
-        }
+        defaults: { userId, ...profileData },
+        transaction
       });
-
+  
       if (!created) {
-        // Update existing profile
-        Object.assign(profile, {
-          firstName,
-          lastName,
-          gender,
-          dateOfBirth,
-          contactInformation,
-          graduationYear,
-          degreeProgram,
-          major,
-          employmentInformation,
-          profilePicture,
-          socialMediaLinks,
-          privacySettings
-        });
-
-        await profile.save();
+        await profile.update(profileData, { transaction });
       }
-
-      res.status(created ? 201 : 200).json(profile);
+  
+      await transaction.commit();
+  
+      res.status(created ? 201 : 200).json({ 
+        message: created ? 'Profile created successfully' : 'Profile updated successfully', 
+        profile 
+      });
+  
     } catch (error) {
+      await transaction.rollback();
       res.status(400).json({ error: error.message });
     }
   }
+  
 
   // Get Alumni Profile
   async getProfile(req, res) {
