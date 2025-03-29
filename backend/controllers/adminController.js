@@ -81,6 +81,31 @@ class AdminController {
     const totalReplies = await ForumReply.count();
     return { totalForums, totalTopics, totalReplies };
   }
+
+
+  async generateReports(req, res) {
+    try {
+      // Gather statistics
+      const userStats = await this.getUserStatistics();
+      const jobStats = await this.getJobPostingStatistics();
+      const eventStats = await this.getEventStatistics();
+      const forumStats = await this.getForumStatistics();
+  
+      // Construct the report
+      const report = {
+        generatedAt: new Date(),
+        userStatistics: userStats,
+        jobPostingStatistics: jobStats,
+        eventStatistics: eventStats,
+        forumStatistics: forumStats,
+      };
+  
+      res.json(report);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  
 }
 
 module.exports = new AdminController();
