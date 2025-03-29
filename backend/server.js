@@ -7,6 +7,9 @@ const {
   syncDatabase 
 } = require('./config/database');
 
+// Import all models and set up associations
+require('./models');  // Ensure models are loaded before DB operations
+
 // Initialize Express App
 const app = express();
 

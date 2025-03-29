@@ -1,6 +1,6 @@
 // models/event.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const { sequelize } = require('../config/database');
 
 const Event = sequelize.define('Event', {
     id: {
