@@ -1,65 +1,67 @@
 const Forum = require('../models/forum');
 const ForumTopic = require('../models/forum-topic');
 const ForumReply = require('../models/forum-reply');
-const { Op } = require('sequelize');
+const { Op, literal } = require('sequelize');
 
 class ForumController {
   // Create Forum
   async createForum(req, res) {
     try {
-      const { title, description } = req.body;
+        const { title, content } = req.body;
 
-      const forum = await Forum.create({
-        title,
-        description,
-        createdBy: req.user.id,
-        status: 'active'
-      });
+        if (!title || !content) {
+            return res.status(400).json({ error: "Title and content are required" });
+        }
 
-      res.status(201).json(forum);
+        const forum = await Forum.create({
+            userId: req.user.id,
+            title,
+            content,
+            status: 'active', 
+            timestamp: new Date()
+        });
+
+        res.status(201).json(forum);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
   }
+
 
   // List Forums
   async listForums(req, res) {
     try {
-      const { 
-        search, 
-        page = 1, 
-        limit = 10 
-      } = req.query;
+        const { search, status = 'active', page = 1, limit = 10 } = req.query;
 
-      const whereClause = { status: 'active' };
+        const whereClause = { status };
 
-      if (search) {
-        whereClause[Op.or] = [
-          { title: { [Op.iLike]: `%${search}%` } },
-          { description: { [Op.iLike]: `%${search}%` } }
-        ];
-      }
+        if (search) {
+            whereClause[Op.or] = [
+                { title: { [Op.iLike]: `%${search}%` } },
+                { content: { [Op.iLike]: `%${search}%` } }
+            ];
+        }
 
-      const forums = await Forum.findAndCountAll({
-        where: whereClause,
-        limit: parseInt(limit),
-        offset: (page - 1) * limit,
-        order: [['createdAt', 'DESC']],
-        include: [{
-          model: ForumTopic,
-          attributes: [[sequelize.fn('COUNT', sequelize.col('topics.id')), 'topicCount']]
-        }],
-        group: ['Forum.id']
-      });
+        const { count, rows } = await Forum.findAndCountAll({
+            where: whereClause,
+            limit: parseInt(limit),
+            offset: (page - 1) * limit,
+            order: [['createdAt', 'DESC']],
+            attributes: {
+                include: [
+                    [literal(`(SELECT COUNT(*) FROM "ForumTopics" WHERE "ForumTopics"."forumId" = "Forum"."id")`), 'topicCount']
+                ]
+            }
+        });
 
-      res.json({
-        forums: forums.rows,
-        totalForums: forums.count,
-        totalPages: Math.ceil(forums.count / limit),
-        currentPage: page
-      });
+        res.json({
+            forums: rows,
+            totalForums: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: parseInt(page)
+        });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
   }
 

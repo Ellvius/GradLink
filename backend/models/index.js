@@ -5,6 +5,9 @@ const MentorshipRequest = require('./mentorship-request');
 const JobPosting = require('./job-posting');
 const Event = require('./event');
 const EventRegistration = require('./event-registration');
+const Forum = require('./forum');
+const ForumTopic = require('./forum-topic');
+const ForumReply = require('./forum-reply');
 
 /**  
  * User ↔ AlumniProfile  
@@ -54,4 +57,50 @@ EventRegistration.belongsTo(Event, { foreignKey: 'eventId' });
 User.hasMany(EventRegistration, { foreignKey: 'userId', onDelete: 'CASCADE' });
 EventRegistration.belongsTo(User, { foreignKey: 'userId' });
 
-module.exports = { User, AlumniProfile, Application, MentorshipRequest, JobPosting, Event, EventRegistration };
+/**  
+ * User ↔ Forum  
+ * One-to-Many: A user can create multiple forums  
+ */
+User.hasMany(Forum, { foreignKey: 'userId', as: 'forums' });
+Forum.belongsTo(User, { foreignKey: 'userId', as: 'creator' });
+
+/**  
+ * Forum ↔ ForumTopic  
+ * One-to-Many: A forum can have multiple topics  
+ */
+Forum.hasMany(ForumTopic, { foreignKey: 'forumId', as: 'topics', onDelete: 'CASCADE' });
+ForumTopic.belongsTo(Forum, { foreignKey: 'forumId', as: 'forum' });
+
+/**  
+ * User ↔ ForumTopic  
+ * One-to-Many: A user can create multiple topics  
+ */
+User.hasMany(ForumTopic, { foreignKey: 'createdBy', as: 'forumTopics' });
+ForumTopic.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
+
+/**  
+ * ForumTopic ↔ ForumReply  
+ * One-to-Many: A topic can have multiple replies  
+ */
+ForumTopic.hasMany(ForumReply, { foreignKey: 'topicId', as: 'replies', onDelete: 'CASCADE' });
+ForumReply.belongsTo(ForumTopic, { foreignKey: 'topicId', as: 'topic' });
+
+/**  
+ * User ↔ ForumReply  
+ * One-to-Many: A user can post multiple replies  
+ */
+User.hasMany(ForumReply, { foreignKey: 'createdBy', as: 'forumReplies' });
+ForumReply.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
+
+module.exports = { 
+    User, 
+    AlumniProfile, 
+    Application, 
+    MentorshipRequest, 
+    JobPosting, 
+    Event, 
+    EventRegistration, 
+    Forum, 
+    ForumTopic, 
+    ForumReply 
+};
