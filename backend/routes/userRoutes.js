@@ -3,6 +3,9 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const { authenticateUser, authorizeRoles } = require('../middleware/authMiddleware');
 
+// Add user
+router.post('/register', userController.registerUser);
+
 // Get user profile
 router.get('/profile', authenticateUser, userController.getUserProfile);
 
@@ -16,6 +19,6 @@ router.patch('/change-password', authenticateUser, userController.changePassword
 router.patch('/deactivate-account', authenticateUser, userController.deactivateAccount);
 
 // List all users (Admin only)
-router.get('/users', authenticateUser, authorizeRoles('admin'), userController.listUsers);
+// router.get('/users', authenticateUser, authorizeRoles('admin'), userController.listUsers);
 
 module.exports = router;

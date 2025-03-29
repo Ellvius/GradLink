@@ -4,6 +4,25 @@ const bcrypt = require('bcryptjs');
 const { generateAuthToken } = require('../middleware/authMiddleware');
 
 class UserController {
+
+    async registerUser (req, res) {
+      console.log("registering");
+    try {
+      const { username, email, password, role } = req.body;
+      console.log(role);
+      if (!['student', 'alumni', 'admin'].includes(role)) {
+        return res.status(400).json({ error: 'Invalid role' });
+      }
+  
+      const newUser = await User.create({ username, email, password, role });
+  
+      res.status(201).json({ message: 'User registered successfully', userId: newUser.id, role: newUser.role });
+    } catch (error) {
+      console.error('Registration error:', error);
+      res.status(500).json({ error: 'Failed to register user' });
+    }
+  };
+
   // Get user profile
   async getUserProfile(req, res) {
     try {

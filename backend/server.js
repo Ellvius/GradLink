@@ -21,19 +21,19 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
 // Import Routes
 const userRoutes = require('./routes/userRoutes');
-const alumniRoutes = require('./routes/alumniRoutes');
-const eventRoutes = require('./routes/eventRoutes');
-const jobRoutes = require('./routes/jobRoutes');
-const forumRoutes = require('./routes/forumRoutes');
-const adminRoutes = require('./routes/adminRoutes');
+// const alumniRoutes = require('./routes/alumniRoutes');
+// const eventRoutes = require('./routes/eventRoutes');
+// const jobRoutes = require('./routes/jobRoutes');
+// const forumRoutes = require('./routes/forumRoutes');
+// const adminRoutes = require('./routes/adminRoutes');
 
 // Route Mounting
 app.use('/api/users', userRoutes);
-app.use('/api/alumni', alumniRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/jobs', jobRoutes);
-app.use('/api/forums', forumRoutes);
-app.use('/api/admin', adminRoutes);
+// app.use('/api/alumni', alumniRoutes);
+// app.use('/api/events', eventRoutes);
+// app.use('/api/jobs', jobRoutes);
+// app.use('/api/forums', forumRoutes);
+// app.use('/api/admin', adminRoutes);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
@@ -44,19 +44,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-// PORT Configuration
 const PORT = process.env.PORT || 5000;
 
-// Start Server
 async function startServer() {
   try {
-    // Test Database Connection
     await testDatabaseConnection();
     
-    // Sync Database Models
     await syncDatabase();
 
-    // Start Express Server
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
