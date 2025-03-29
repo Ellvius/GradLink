@@ -23,6 +23,41 @@ class UserController {
     }
   };
 
+  async loginUser(req, res) {
+    try {
+      const { email, password } = req.body;
+  
+      // Find user by email
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+  
+      // Verify password
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+  
+      // Generate JWT token
+      const token = generateAuthToken(user);
+  
+      res.json({
+        message: "Login successful",
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to login" });
+    }
+  }
+  
+
   // Get user profile
   async getUserProfile(req, res) {
     try {
