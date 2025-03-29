@@ -1,216 +1,200 @@
-"use client";
+"use client"
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import Head from 'next/head';
-import Image from 'next/image';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
-export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+const TopicPage = () => {
+  // State for the topic/post
+  const [topic, setTopic] = useState({
+    id: '1',
+    title: 'Summer 2025 Tech Internships - Application Tips & Opportunities',
+    content: 'Looking for a summer internship in tech? This thread collects current opportunities and application tips from alumni who have been through the process.',
+    author: 'CareerServices',
+    date: 'March 25, 2025',
+    tags: ['internships', 'technology', 'summer2025'],
+    replies: []
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
-    
-    try {
-      // Simulate API call with timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Here you would normally make an API call to your authentication endpoint
-      // const response = await fetch('/api/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      // });
-      
-      // For now, we'll just redirect to the dashboard
-      // if (response.ok) {
-      //   window.location.href = '/dashboard';
-      // } else {
-      //   setError('Invalid email or password');
-      // }
-      
-      // For demonstration purposes:
-      if (email && password) {
-        window.location.href = '/dashboard';
-      } else {
-        setError('Please enter both email and password');
-      }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+  // State for user reply
+  const [newReply, setNewReply] = useState('');
+  
+  // State for replies
+  const [replies, setReplies] = useState([
+    {
+      id: '1',
+      author: 'TechAlum2022',
+      content: "I got my first job through the Google STEP program. They're currently accepting applications for Summer 2025! The deadline is April 15th. Focus on your problem-solving skills in the interview.",
+      date: 'March 26, 2025',
+      likes: 24
+    },
+    {
+      id: '2',
+      author: 'CSMajor2025',
+      content: "Has anyone had experience with startups? I'm wondering if I should focus on bigger companies or try for startups this summer.",
+      date: 'March 27, 2025',
+      likes: 8
+    },
+    {
+      id: '3',
+      author: 'AlumniMentor',
+      content: "I've worked at both! Startups give you broader experience and more responsibility, while bigger companies offer more structure and often better pay. Happy to chat more about the differences if anyone is interested.",
+      date: 'March 27, 2025',
+      likes: 15
     }
+  ]);
+
+  // State for related topics
+  const [relatedTopics, setRelatedTopics] = useState([
+    'Resume Review Workshop - April 2nd',
+    'Mock Interview Sessions - Sign Up Now',
+    'Fall 2025 Recruitment Fair Companies Announced'
+  ]);
+
+  // State for active view
+  const [activeView, setActiveView] = useState('discussion');
+
+  // Handle posting a new reply
+  const handlePostReply = () => {
+    if (newReply.trim() === '') return;
+    
+    const reply = {
+      id: `${replies.length + 1}`,
+      author: 'CurrentUser',
+      content: newReply,
+      date: 'March 29, 2025',
+      likes: 0
+    };
+    
+    setReplies([...replies, reply]);
+    setNewReply('');
+  };
+
+  // Handle liking a reply
+  const handleLike = (id) => {
+    setReplies(replies.map(reply => 
+      reply.id === id ? {...reply, likes: reply.likes + 1} : reply
+    ));
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Head>
-        <title>Login - Gradlink</title>
-        <meta name="description" content="Login to your Gradlink account" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <Link href="/" className="flex items-center">
-            <span className="font-bold text-2xl text-blue-600">Gradlink</span>
-          </Link>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-16">
-        <div className="max-w-md mx-auto">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="px-6 py-8">
-              <div className="text-center mb-8">
-                <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-                <p className="text-gray-600 mt-2">
-                  Log in to your account to continue
-                </p>
-              </div>
-              
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-                  {error}
-                </div>
-              )}
-              
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email address
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-500 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500  placeholder:text-gray-500"
-                    placeholder="your.email@example.com"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                      Password
-                    </label>
-                    <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800">
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-500 rounded-md focus:outline-none text-black focus:ring-2 focus:ring-blue-500  placeholder:text-gray-500"
-                    placeholder="••••••••"
-                    required
-                  />
-                </div>
-                
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                    Remember me
-                  </label>
-                </div>
-                
-                <div>
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-                  >
-                    {isLoading ? (
-                      <span>Logging in...</span>
-                    ) : (
-                      <span>Log in</span>
-                    )}
-                  </button>
-                </div>
-              </form>
-              
-              <div className="mt-6">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">Or continue with</span>
-                  </div>
-                </div>
-                
-                <div className="mt-6 grid grid-cols-3 gap-3">
-                  <button
-                    type="button"
-                    className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  >
-                    <span className="sr-only">Sign in with Google</span>
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972a6.033 6.033 0 110-12.064c1.498 0 2.866.549 3.921 1.453l2.814-2.814A9.969 9.969 0 0012.545 2C7.021 2 2.543 6.477 2.543 12s4.478 10 10.002 10c8.396 0 10.249-7.85 9.426-11.748l-9.426-.013z" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  >
-                    <span className="sr-only">Sign in with LinkedIn</span>
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  >
-                    <span className="sr-only">Sign in with Apple</span>
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.47-3.234c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
+    <div className="mx-auto max-w-4xl p-4">
+      <h1 className="text-2xl font-bold mb-2">{topic.title}</h1>
+      <div className="flex gap-2 mb-4">
+        {topic.tags.map(tag => (
+          <span key={tag} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+            {tag}
+          </span>
+        ))}
+      </div>
+      
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+              <span className="text-gray-600 font-bold">{topic.author.charAt(0)}</span>
             </div>
-            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 text-center">
-              <p className="text-gray-600">
-                Don't have an account?{' '}
-                <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
-                  Sign up
-                </Link>
-              </p>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold">{topic.author}</span>
+                <span className="text-gray-500 text-sm">{topic.date}</span>
+              </div>
+              <p className="mt-2">{topic.content}</p>
             </div>
           </div>
-        </div>
-      </main>
+        </CardContent>
+      </Card>
 
-      <footer className="bg-white border-t border-gray-200 mt-auto">
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-center text-gray-500 text-sm">
-            <p>&copy; {new Date().getFullYear()} Gradlink. All rights reserved.</p>
-            <div className="mt-2 space-x-4">
-              <Link href="/terms" className="hover:text-gray-700">Terms</Link>
-              <Link href="/privacy" className="hover:text-gray-700">Privacy</Link>
-              <Link href="/contact" className="hover:text-gray-700">Contact</Link>
-            </div>
-          </div>
+      {/* Custom tab navigation */}
+      <div className="flex border-b mb-4">
+        <button 
+          className={`py-2 px-4 ${activeView === 'discussion' ? 'border-b-2 border-blue-500 font-semibold' : 'text-gray-500'}`}
+          onClick={() => setActiveView('discussion')}
+        >
+          Discussion ({replies.length})
+        </button>
+        <button 
+          className={`py-2 px-4 ${activeView === 'related' ? 'border-b-2 border-blue-500 font-semibold' : 'text-gray-500'}`}
+          onClick={() => setActiveView('related')}
+        >
+          Related Topics
+        </button>
+      </div>
+      
+      {/* Discussion view */}
+      {activeView === 'discussion' && (
+        <div className="space-y-4">
+          {replies.map(reply => (
+            <Card key={reply.id} className="mb-4">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                    <span className="text-gray-600 font-bold">{reply.author.charAt(0)}</span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold">{reply.author}</span>
+                      <span className="text-gray-500 text-sm">{reply.date}</span>
+                    </div>
+                    <p className="mt-2">{reply.content}</p>
+                    <div className="mt-2 flex items-center gap-1">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleLike(reply.id)}
+                        className="text-gray-500 hover:text-blue-600"
+                      >
+                        👍 {reply.likes}
+                      </Button>
+                      <Button variant="ghost" size="sm" className="text-gray-500">Reply</Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+          
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex gap-4">
+                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                  <span className="text-gray-600 font-bold">C</span>
+                </div>
+                <div className="flex-1">
+                  <Input
+                    placeholder="Share your thoughts or ask a question..."
+                    value={newReply}
+                    onChange={(e) => setNewReply(e.target.value)}
+                    className="mb-2"
+                  />
+                  <Button onClick={handlePostReply}>Post Reply</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </footer>
+      )}
+      
+      {/* Related topics view */}
+      {activeView === 'related' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Related Topics</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2">
+              {relatedTopics.map((topic, index) => (
+                <li key={index} className="p-2 hover:bg-gray-100 rounded cursor-pointer">
+                  {topic}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
-}
+};
+
+export default TopicPage;
