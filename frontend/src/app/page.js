@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar/index';
+import Footer from '@/components/footer';
 
 const TopicPage = () => {
   // State for the topic/post
@@ -197,6 +198,7 @@ const TopicPage = () => {
           </Card>
         )}
       </div>
+      <Footer />
     </div>
   );
   

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Alumni.css";
-
+import Footer from "@/components/footer";
 export default function AlumniList() {
   const [alumni, setAlumni] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,6 +69,7 @@ export default function AlumniList() {
           </div>
         ))}
       </div>
+      <Footer />
     </div>
   );
 }

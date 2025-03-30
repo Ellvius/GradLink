@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Search, MessageSquare, Users, Briefcase, BookOpen, ArrowUpRight } from 'lucide-react';
-
+import Footer from '@/components/footer';
 export default function ForumHome() {
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -73,7 +73,8 @@ export default function ForumHome() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div>
+    <div className="max-w-6xl mx-auto py-6 ">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-gray-800">GradLink Forums</h1>
         <div className="relative w-1/3">
@@ -167,6 +168,9 @@ export default function ForumHome() {
           Create New Topic
         </Link>
       </div>
+      
+    </div>
+    <Footer className="mt-12" />
     </div>
   );
 }

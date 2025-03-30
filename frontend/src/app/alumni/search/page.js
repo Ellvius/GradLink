@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Search, Filter, MapPin, Briefcase, GraduationCap, ChevronDown, ChevronUp, X } from 'lucide-react';
-
+import Footer from '@/components/footer';
 const AlumniSearchPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [industryFilter, setIndustryFilter] = useState('');
@@ -315,6 +315,7 @@ const AlumniSearchPage = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

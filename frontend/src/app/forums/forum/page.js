@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { MessageSquare, ChevronRight, ThumbsUp, Flag, Share, Bookmark, MoreHorizontal, Send } from 'lucide-react';
-
+import Footer from '@/components/footer';
 export default function TopicDiscussion() {
   const [replyContent, setReplyContent] = useState('');
   
@@ -110,6 +110,7 @@ export default function TopicDiscussion() {
   };
 
   return (
+    <div>
     <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="flex items-center mb-6">
         <Link href="/forums" className="text-gray-500 hover:text-gray-700">Forums</Link>
@@ -265,6 +266,8 @@ export default function TopicDiscussion() {
           </form>
         </div>
       </div>
+    </div>
+    <Footer />  
     </div>
   );
 }

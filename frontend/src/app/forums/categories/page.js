@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Search, MessageSquare, Users, Briefcase, BookOpen, ArrowUpRight, ChevronRight, Bell } from 'lucide-react';
-
+import Footer from '@/components/footer';
 export default function ForumCategories() {
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -85,7 +85,8 @@ export default function ForumCategories() {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div>
+     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex items-center mb-6">
         <Link href="/forums" className="text-gray-500 hover:text-gray-700">Forums</Link>
         <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
@@ -149,6 +150,8 @@ export default function ForumCategories() {
           Create New Topic
         </Link>
       </div>
+    </div>
+    <Footer />
     </div>
   );
 }

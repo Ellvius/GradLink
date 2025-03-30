@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Calendar, MapPin, Users, Clock } from 'lucide-react';
-
+import Footer from '@/components/footer';
 const EventsPage = () => {
   const [filter, setFilter] = useState('all');
 
@@ -138,6 +138,11 @@ const EventsPage = () => {
           </div>
         )}
       </div>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <Footer />
     </div>
   );
 };
