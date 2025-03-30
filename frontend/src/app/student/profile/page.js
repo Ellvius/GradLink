@@ -1,5 +1,5 @@
 "use client";
-
+import Footer from '@/components/footer';
 import React, { useState } from 'react';
 
 const StudentProfile = () => {
@@ -44,7 +44,8 @@ const StudentProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div>
+      <div className="min-h-screen bg-gray-100 p-6">
       <div className="container mx-auto max-w-4xl">
         {/* Profile Header */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
@@ -167,6 +168,8 @@ const StudentProfile = () => {
 
         
       </div>
+    </div>
+    <Footer />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import Footer from '@/components/footer';
 import React, { useState } from 'react';
 import { 
   Calendar, 
@@ -83,7 +84,8 @@ const StudentDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div>
+      <div className="min-h-screen bg-gray-100 p-6">
       <div className="container mx-auto">
         {/* Header */}
         <div className="mb-6 flex justify-between items-center">
@@ -256,6 +258,8 @@ const StudentDashboard = () => {
           </div>
         </div>
       </div>
+    </div>
+    <Footer />
     </div>
   );
 };

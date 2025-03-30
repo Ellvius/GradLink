@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Footer from '@/components/footer';
 import { 
   Card, 
   CardContent, 

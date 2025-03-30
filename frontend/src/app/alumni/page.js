@@ -1,5 +1,6 @@
 "use client";
 
+import Footer from '@/components/footer';
 import React, { useState } from 'react';
 import { 
   Users, 
@@ -56,7 +57,7 @@ const AlumniDashboard = () => {
   ];
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-gray-50 min-h-screen pt-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
@@ -171,6 +172,8 @@ const AlumniDashboard = () => {
           </div>
         </div>
       </div>
+      <br></br>
+      <Footer />
     </div>
   );
 };

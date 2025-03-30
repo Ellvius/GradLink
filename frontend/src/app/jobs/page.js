@@ -1,5 +1,5 @@
 "use client";
-
+import Footer from '@/components/footer';
 import React, { useState, useEffect } from 'react';
 import { 
   Search, 
@@ -99,6 +99,7 @@ const JobListings = () => {
   };
 
   return (
+    <div>
     <div className="bg-gray-50 min-h-screen p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -204,6 +205,8 @@ const JobListings = () => {
           </div>
         )}
       </div>
+    </div>
+    <Footer />
     </div>
   );
 };

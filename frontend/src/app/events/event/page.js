@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Calendar, MapPin, Users, Clock, ArrowLeft, Share2, BookmarkIcon } from 'lucide-react';
-
+import Footer from '@/components/footer';
 const EventDetailPage = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -160,6 +160,7 @@ const EventDetailPage = () => {
           </div>
         </div>
       </div>
+      <Footer className="mt-12" />
     </div>
   );
 };

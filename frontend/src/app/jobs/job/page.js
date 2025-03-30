@@ -1,5 +1,5 @@
 "use client";
-
+import Footer from '@/components/footer';
 import React, { useState } from 'react';
 import { 
   Briefcase, 
@@ -54,7 +54,7 @@ Key Responsibilities:
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div>   <div className="bg-gray-50 min-h-screen p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
@@ -183,6 +183,9 @@ Key Responsibilities:
         </div>
       </div>
     </div>
+    <Footer />
+    </div>
+ 
   );
 };
 
