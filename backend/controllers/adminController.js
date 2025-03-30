@@ -9,7 +9,7 @@ const { Op } = require('sequelize');
 
 class AdminController {
   // User Management
-  async manageUser(req, res) {
+  manageUser = async (req, res) => {
     try {
       const { userId } = req.params;
       const { role, accountStatus } = req.body;
@@ -28,7 +28,7 @@ class AdminController {
   }
 
   // Platform-wide Statistics
-  async getPlatformStatistics(req, res) {
+  getPlatformStatistics = async (req, res) => {
     try {
       const statistics = {
         users: await this.getUserStatistics(),
@@ -40,7 +40,7 @@ class AdminController {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  };
 
   // Get User Statistics
   async getUserStatistics() {
@@ -69,8 +69,8 @@ class AdminController {
   // Get Event Statistics
   async getEventStatistics() {
     const totalEvents = await Event.count();
-    const upcomingEvents = await Event.count({ where: { startDate: { [Op.gt]: new Date() } } });
-    const pastEvents = await Event.count({ where: { endDate: { [Op.lt]: new Date() } } });
+    const upcomingEvents = await Event.count({ where: { startDateTime: { [Op.gt]: new Date() } } });
+    const pastEvents = await Event.count({ where: { endDateTime: { [Op.lt]: new Date() } } });
     return { totalEvents, upcomingEvents, pastEvents };
   }
 
@@ -83,7 +83,7 @@ class AdminController {
   }
 
 
-  async generateReports(req, res) {
+  generateReports = async (req, res) => {
     try {
       // Gather statistics
       const userStats = await this.getUserStatistics();
