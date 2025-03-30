@@ -7,12 +7,12 @@ const roleMiddleware = require('../middleware/roleMiddleware');
 router.use(authenticateUser);
 
 router.get('/', eventController.getAllEvents);
-router.post('/', authorizeRoles(['admin', 'alumni']), eventController.createEvent);
+router.post('/', authorizeRoles('admin', 'alumni'), eventController.createEvent);
+router.get('/search', eventController.listEvents);
+router.get('/user-registrations', eventController.getUserEventRegistrations);
 router.get('/:eventId', eventController.getEventDetails);
 router.post('/:eventId/register', eventController.registerForEvent);
 router.post('/:eventId/cancel-registration', eventController.cancelEventRegistration);
-router.get('/search', eventController.listEvents);
-router.get('/user-registrations', eventController.getUserEventRegistrations);
 
 module.exports = router;
  

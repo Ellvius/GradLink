@@ -10,7 +10,7 @@ router.use(roleMiddleware(['alumni']));
 router.post('/profile', alumniController.createOrUpdateProfile);
 router.get('/profile', alumniController.getProfile);
 router.post('/job', alumniController.postJob);
-router.post('/event', alumniController.createEvent);
+// router.post('/event', alumniController.createEvent);
 // router.get('/applications', alumniController.viewApplications);
 // router.post('/mentor-request', alumniController.respondToMentorship);
 

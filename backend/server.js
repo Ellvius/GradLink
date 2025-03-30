@@ -22,16 +22,16 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 // Import Routes
 const userRoutes = require('./routes/userRoutes');
 const alumniRoutes = require('./routes/alumniRoutes');
-// const eventRoutes = require('./routes/eventRoutes');
-// const jobRoutes = require('./routes/jobRoutes');
+const eventRoutes = require('./routes/eventRoutes');
+const jobRoutes = require('./routes/jobRoutes');
 // const forumRoutes = require('./routes/forumRoutes');
 // const adminRoutes = require('./routes/adminRoutes');
 
 // Route Mounting
 app.use('/api/users', userRoutes);
 app.use('/api/alumni', alumniRoutes);
-// app.use('/api/events', eventRoutes);
-// app.use('/api/jobs', jobRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/jobs', jobRoutes);
 // app.use('/api/forums', forumRoutes);
 // app.use('/api/admin', adminRoutes);
 
