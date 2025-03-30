@@ -1,7 +1,10 @@
 const Forum = require('../models/forum');
 const ForumTopic = require('../models/forum-topic');
 const ForumReply = require('../models/forum-reply');
+const User = require('../models/user'); 
 const { Op, literal } = require('sequelize');
+const { sequelize } = require('../config/database');
+
 
 class ForumController {
   // Create Forum
@@ -94,51 +97,52 @@ class ForumController {
   // List Forum Topics
   async listForumTopics(req, res) {
     try {
-      const { forumId } = req.params;
-      const { 
-        search, 
-        page = 1, 
-        limit = 10 
-      } = req.query;
+        const { forumId } = req.params;
+        const { search, page = 1, limit = 10 } = req.query;
 
-      const whereClause = { 
-        forumId, 
-        status: 'active' 
-      };
+        const whereClause = {
+            forumId,
+            status: 'active'
+        };
 
-      if (search) {
-        whereClause[Op.or] = [
-          { title: { [Op.iLike]: `%${search}%` } },
-          { content: { [Op.iLike]: `%${search}%` } }
-        ];
-      }
+        if (search) {
+            whereClause[Op.or] = [
+                { title: { [Op.iLike]: `%${search}%` } },
+                { content: { [Op.iLike]: `%${search}%` } }
+            ];
+        }
 
-      const topics = await ForumTopic.findAndCountAll({
-        where: whereClause,
-        limit: parseInt(limit),
-        offset: (page - 1) * limit,
-        order: [['createdAt', 'DESC']],
-        include: [{
-          model: ForumReply,
-          attributes: [[sequelize.fn('COUNT', sequelize.col('replies.id')), 'replyCount']]
-        }, {
-          model: User,
-          as: 'creator',
-          attributes: ['username']
-        }],
-        group: ['ForumTopic.id', 'creator.id']
-      });
+        const topics = await ForumTopic.findAndCountAll({
+            where: whereClause,
+            limit: parseInt(limit),
+            offset: (page - 1) * limit,
+            order: [['createdAt', 'DESC']],
+            attributes: {
+                include: [
+                    // Count replies using a subquery
+                    [literal(`(SELECT COUNT(*) FROM "ForumReplies" WHERE "ForumReplies"."topicId" = "ForumTopic"."id")`), 'replyCount']
+                ]
+            },
+            include: [
+                {
+                    model: User,
+                    as: 'creator',
+                    attributes: ['username']
+                }
+            ]
+        });
 
-      res.json({
-        topics: topics.rows,
-        totalTopics: topics.count,
-        totalPages: Math.ceil(topics.count / limit),
-        currentPage: page
-      });
+        res.json({
+            topics: topics.rows,
+            totalTopics: topics.count,
+            totalPages: Math.ceil(topics.count / limit),
+            currentPage: parseInt(page)
+        });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
-  }
+}
+
 
   // Add Reply to Topic
   async addTopicReply(req, res) {
@@ -176,6 +180,7 @@ class ForumController {
       const topic = await ForumTopic.findByPk(topicId, {
         include: [{
           model: ForumReply,
+          as: 'replies',
           include: [{
             model: User,
             as: 'creator',
@@ -236,7 +241,7 @@ class ForumController {
       content.status = status;
       await content.save();
 
-      res.json(content);
+      res.json({message:'Status updated successfully',content});
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
