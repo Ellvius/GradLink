@@ -5,8 +5,8 @@ const { authenticateUser, authorizeRoles } = require('../middleware/authMiddlewa
 
 router.use(authenticateUser);
 
-router.post('/', authorizeRoles(['alumni']), jobController.createJobPosting);
-router.put('/:jobId', authorizeRoles(['alumni']), jobController.updateJobPosting);
+router.post('/', authorizeRoles('alumni','admin'), jobController.createJobPosting);
+router.put('/:jobId', authorizeRoles('alumni','admin'), jobController.updateJobPosting);
 router.get('/', jobController.listJobPostings);
 router.get('/:jobId', jobController.getJobPostingDetails);
 router.post('/:jobId/apply', jobController.applyForJob);

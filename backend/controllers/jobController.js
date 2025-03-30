@@ -1,19 +1,19 @@
 const JobPosting = require('../models/job-posting');
 const { Op } = require('sequelize');
 const User = require('../models/user');
-const Application = require('../models/application'); 
+const Application = require('../models/application');
 
 class JobController {
   // Create Job Posting (Alumni)
   async createJobPosting(req, res) {
     try {
       const {
-        companyName,  // Matches model
-        jobTitle,     // Matches model
+        companyName,
+        jobTitle,
         description,
         requirements,
         location,
-        jobType,      // Matches model
+        jobType,
         expirationDate,
         applicationLink
       } = req.body;
@@ -25,10 +25,10 @@ class JobController {
         requirements,
         location,
         jobType,
-        postedBy: req.User.id,
+        postedBy: req.user.id, // Matches the model
         expirationDate,
         applicationLink,
-        status: 'active'
+        status: 'active' // Matches ENUM('active', 'closed')
       });
 
       res.status(201).json(jobPosting);
@@ -59,11 +59,11 @@ class JobController {
       }
 
       // Ensure only the poster or an admin can update
-      if (jobPosting.postedBy.toString() !== req.User.id.toString() && req.User.role !== 'admin') {
+      if (jobPosting.postedBy !== req.user.id && req.user.role !== 'admin') {
         return res.status(403).json({ error: 'Unauthorized to update this job posting' });
-    }
+      }
 
-      // Apply changes
+      // Apply changes (ensure it matches the model)
       jobPosting.companyName = companyName || jobPosting.companyName;
       jobPosting.jobTitle = jobTitle || jobPosting.jobTitle;
       jobPosting.description = description || jobPosting.description;
@@ -72,7 +72,7 @@ class JobController {
       jobPosting.jobType = jobType || jobPosting.jobType;
       jobPosting.expirationDate = expirationDate || jobPosting.expirationDate;
       jobPosting.applicationLink = applicationLink || jobPosting.applicationLink;
-      jobPosting.status = status || jobPosting.status;
+      jobPosting.status = status || jobPosting.status; // Only 'active' or 'closed' allowed
 
       await jobPosting.save();
 
@@ -82,10 +82,11 @@ class JobController {
     }
   }
 
+  // List all job postings
   async listJobPostings(req, res) {
     try {
       const jobs = await JobPosting.findAll({
-        include: [{ model: User, as: 'poster', attributes: ['id', 'username', 'email'] }],
+        include: [{ model: User, as: 'poster', attributes: ['id', 'username', 'email'] }]
       });
       res.json(jobs);
     } catch (error) {
@@ -93,12 +94,11 @@ class JobController {
     }
   }
 
-
-  // Get details of a specific job posting (Newly added)
+  // Get details of a specific job posting
   async getJobPostingDetails(req, res) {
     try {
       const jobPosting = await JobPosting.findByPk(req.params.jobId, {
-        include: [{ model: User, as: 'poster', attributes: ['id', 'username', 'email'] }],
+        include: [{ model: User, as: 'poster', attributes: ['id', 'username', 'email'] }]
       });
 
       if (!jobPosting) {
@@ -111,37 +111,38 @@ class JobController {
     }
   }
 
+  // Apply for a job (Students only)
   async applyForJob(req, res) {
     try {
-      const userId = req.User.id; // Get logged-in user ID
-      const { jobId } = req.body; // Get job ID from request
-  
-      // 1. Ensure the user is a student
-      if (req.User.role !== 'student') {
+      const userId = req.user.id; // Get logged-in user ID
+      const jobId = req.params.jobId; // Get job ID from request params
+
+      // Ensure only students can apply
+      if (req.user.role !== 'student') {
         return res.status(403).json({ error: 'Only students can apply for jobs' });
       }
-  
-      // 2. Check if the job exists
+
+      // Check if the job exists
       const job = await JobPosting.findByPk(jobId);
       if (!job) {
         return res.status(404).json({ error: 'Job posting not found' });
       }
-  
-      // 3. Prevent duplicate applications
+
+      // Prevent duplicate applications
       const existingApplication = await Application.findOne({
-        where: { studentId: userId, jobId }
+        where: { studentId: userId, jobId } // Ensure jobId is correctly used
       });
-  
+
       if (existingApplication) {
         return res.status(400).json({ error: 'You have already applied for this job' });
       }
-  
-      // 4. Create a new application
+
+      // Create a new application
       const application = await Application.create({
         studentId: userId,
         jobId
       });
-  
+
       res.status(201).json(application);
     } catch (error) {
       res.status(500).json({ error: error.message });
