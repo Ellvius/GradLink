@@ -15,14 +15,17 @@ const Navbar = () => {
           <Link href="/" className="hover:text-gray-300 transition">
             Home
           </Link>
-          <Link href="/about" className="hover:text-gray-300 transition">
-            About
+          <Link href="/forums" className="hover:text-gray-300 transition">
+            Forums
           </Link>
-          <Link href="/services" className="hover:text-gray-300 transition">
-            Services
+          <Link href="/alumni" className="hover:text-gray-300 transition">
+            Alumni
           </Link>
-          <Link href="/contact" className="hover:text-gray-300 transition">
-            Contact
+          <Link href="/jobs" className="hover:text-gray-300 transition">
+            Jobs & Internships
+          </Link>
+          <Link href="/events" className="hover:text-gray-300 transition">
+            Events
           </Link>
         </div>
         
