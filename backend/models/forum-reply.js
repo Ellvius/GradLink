@@ -28,6 +28,11 @@ const ForumReply = sequelize.define('ForumReply', {
             key: 'id'
         },
         allowNull: false
+    },
+    status: {
+        type: DataTypes.ENUM('active', 'pending', 'hidden', 'deleted'),
+        defaultValue: 'active',
+        allowNull: false
     }
 }, {
     timestamps: true

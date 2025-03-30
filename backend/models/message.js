@@ -1,6 +1,6 @@
 // models/message.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const {sequelize} = require('../config/database');
 const User = require('./user');
 
 const Message = sequelize.define('Message', {
