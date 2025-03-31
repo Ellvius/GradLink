@@ -6,6 +6,7 @@ import axios from "axios";
 import { Calendar, MapPin, Users, Clock, ArrowLeft, Share2, BookmarkIcon } from "lucide-react";
 import Footer from "@/components/footer";
 import Navbar from "@/components/Navbar";
+import { format } from 'date-fns';
 
 const EventDetailPage = () => {
   const { eventId } = useParams(); // Get event ID from URL
@@ -84,11 +85,11 @@ const EventDetailPage = () => {
           <div className="grid md:grid-cols-3 gap-4">
             <div className="flex items-center space-x-2">
               <Calendar className="h-5 w-5 text-blue-500" />
-              <span className="text-gray-700">{event?.date}</span>
+              <span className="font-bold text-gray-700">{event && format(new Date(event?.startDateTime), "dd/MM/yyyy")}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Clock className="h-5 w-5 text-green-500" />
-              <span className="text-gray-700">{event?.time}</span>
+              <span className="text-gray-700">{event && format(new Date(event?.startDateTime), "HH:mm")}</span>
             </div>
             <div className="flex items-center space-x-2">
               <MapPin className="h-5 w-5 text-red-500" />
@@ -131,29 +132,14 @@ const EventDetailPage = () => {
 
         {/* Registration Info */}
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold mb-4">Registration</h2>
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700">Registered Users</span>
-              <span className="font-bold text-blue-600">
-                {event?.registeredUsers} / {event?.totalCapacity}
+          <h2 className="text-2xl font-semibold mb-4">Capacity</h2>
+          <span className="font-bold text-xl text-blue">
+                {event?.capacity}
               </span>
-            </div>
-            {event?.registeredUsers >= event?.totalCapacity && (
-              <p className="text-red-600 mt-2">Event is currently at full capacity</p>
-            )}
-          </div>
         </div>
 
         {/* Prerequisites */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold mb-4">Prerequisites</h2>
-          <ul className="list-disc list-inside text-gray-700 space-y-2">
-            {event?.prerequisites?.map((prereq, index) => (
-              <li key={index}>{prereq}</li>
-            ))}
-          </ul>
-        </div>
+        
 
         {/* Organizer Info */}
         {/* <div>
