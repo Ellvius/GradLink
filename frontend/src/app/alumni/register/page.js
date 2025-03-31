@@ -127,7 +127,7 @@ export default function AlumniProfileForm() {
       console.log("API response:", response.data);
       
       // On success, redirect to profile view
-      router.push("/");
+      router.push("/alumni");
       
     } catch (err) {
       console.error("Submission error:", err);

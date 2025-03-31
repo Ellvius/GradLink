@@ -27,7 +27,7 @@ export default function Login() {
 
       // Save token to localStorage
       localStorage.setItem("token", data.token);
-
+      localStorage.setItem("role", data.user.role);
       // Redirect to home page
       if(data.user.role === 'alumni'){
         router.push("/alumni");

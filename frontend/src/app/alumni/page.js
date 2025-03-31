@@ -1,50 +1,193 @@
 "use client";
 
+import React, { useState, useEffect } from 'react';
 import Footer from '@/components/footer';
-import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import axios from 'axios';
 import { 
   Users, 
   Briefcase, 
   MessageCircle, 
-  Star, 
+  LayoutDashboard,
   Search, 
-  Filter, 
+  Bell,
   ArrowRight,
   User,
   MessageSquare,
   LogOut,
-  Calendar
+  Calendar,
+  Settings,
+  Plus,
+  Loader2
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const AlumniDashboard = () => {
-  const [activeSection, setActiveSection] = useState('profile');
+  const router = useRouter();
+  const [activeSection, setActiveSection] = useState('dashboard');
+  const [user, setUser] = useState(null);
+  const [userEvents, setUserEvents] = useState([]);
+  const [userJobs, setUserJobs] = useState([]);
+  const [loading, setLoading] = useState({
+    user: true,
+    events: true,
+    jobs: true
+  });
+  const [error, setError] = useState({
+    user: null,
+    events: null,
+    jobs: null
+  });
   
-  // Mock data - in a real application, this would come from backend
-  const alumniProfile = {
+  // Get auth token from localStorage
+  const getAuthToken = () => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token');
+    }
+    return null;
+  };
+
+  // Fetch user profile
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error('Authentication token not found');
+        }
+        
+        const response = await axios.get('http://localhost:5000/api/alumni/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        console.log(response.data);
+        setUser(response.data);
+        setLoading(prev => ({ ...prev, user: false }));
+      } catch (err) {
+        console.error('Error fetching user profile:', err);
+        setError(prev => ({ ...prev, user: 'Failed to load profile data' }));
+        setLoading(prev => ({ ...prev, user: false }));
+      }
+    };
+    
+    fetchUserProfile();
+  }, []);
+  
+  // Fetch user events
+  useEffect(() => {
+    const fetchUserEvents = async () => {
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error('Authentication token not found');
+        }
+        
+        const response = await axios.get('http://localhost:5000/api/events/user-registrations', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        console.log(response.data);
+        setUserEvents(response.data);
+        setLoading(prev => ({ ...prev, events: false }));
+      } catch (err) {
+        console.error('Error fetching user events:', err);
+        setError(prev => ({ ...prev, events: 'Failed to load event data' }));
+        setLoading(prev => ({ ...prev, events: false }));
+      }
+    };
+    
+    fetchUserEvents();
+  }, []);
+  
+  // Fetch user job postings
+  useEffect(() => {
+    const fetchUserJobs = async () => {
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error('Authentication token not found');
+        }
+        
+        const response = await axios.get('http://localhost:5000/api/jobs/', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        setUserJobs(response.data);
+        setLoading(prev => ({ ...prev, jobs: false }));
+      } catch (err) {
+        console.error('Error fetching user jobs:', err);
+        setError(prev => ({ ...prev, jobs: 'Failed to load job postings' }));
+        setLoading(prev => ({ ...prev, jobs: false }));
+      }
+    };
+    
+    fetchUserJobs();
+  }, []);
+
+  const handleLogout = ()=>{
+    console.log("logout");
+    localStorage.clear();
+    router.push("/auth/login");
+  }
+
+  const addEvent = () => {
+    console.log('Add new event');
+    router.push("/event/create");
+  }
+
+  const addJob = () => {
+    console.log('Add new job');
+    router.push("/job/create");
+  }
+
+  // Fallback data in case API fails
+  const fallbackUser = {
     name: "Emily Rodriguez",
     graduationYear: 2022,
     major: "Computer Science",
     currentRole: "Software Engineer",
     company: "TechInnovate Solutions",
     email: "emily.rodriguez@example.com",
-    location: "San Francisco, CA"
+    location: "San Francisco, CA",
+    profilePicture: null
   };
 
-  const jobOpportunities = [
+  const fallbackEvents = [
+    {
+      id: 1,
+      title: "Alumni Networking Mixer",
+      date: "April 15, 2025",
+      location: "Virtual",
+      attendees: 45
+    },
+    {
+      id: 2,
+      title: "Industry Panel: Future of Tech",
+      date: "May 2, 2025",
+      location: "Campus Center",
+      attendees: 120
+    }
+  ];
+
+  const fallbackJobs = [
     {
       id: 1,
       title: "Senior Software Developer",
       company: "Global Tech Inc.",
       location: "San Francisco, CA",
-      alumniNetwork: true
+      postedOn: "March 25, 2025",
+      applicants: 12
     },
     {
       id: 2,
       title: "Data Science Specialist",
       company: "DataWorks Enterprise",
       location: "New York, NY",
-      alumniNetwork: false
+      postedOn: "March 28, 2025",
+      applicants: 8
     }
   ];
 
@@ -62,177 +205,241 @@ const AlumniDashboard = () => {
       newPosts: 5
     }
   ];
-  
-  const events = [
-    {
-      id: 1,
-      title: "Alumni Networking Mixer",
-      date: "April 15, 2025",
-      location: "Virtual",
-      attendees: 45
-    },
-    {
-      id: 2,
-      title: "Industry Panel: Future of Tech",
-      date: "May 2, 2025",
-      location: "Campus Center",
-      attendees: 120
-    }
-  ];
+
+  // Use actual data if available, otherwise use fallback
+  const displayUser = user || fallbackUser;
+  const displayEvents = userEvents.length > 0 ? userEvents : fallbackEvents;
+  const displayJobs = userJobs.length > 0 ? userJobs : fallbackJobs;
+console.log(displayUser);
+  // Format date for events
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   return (
-    <div className="flex-col min-h-screen">
-    <div className="bg-gray-50 min-h-screen flex">
-      {/* Left Sidebar - 20% width */}
-      <div className="w-1/5 bg-white p-6 border-r border-gray-200 shadow-sm">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-blue-600 mb-4">GradLink</h1>
-        </div>
-        
-        {/* Navigation Items */}
-        <nav className="space-y-6">
-          <button 
-            className={`w-full flex items-center p-3 rounded text-left ${
-              activeSection === 'profile' 
-                ? 'bg-blue-100 text-blue-600 font-medium' 
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-            onClick={() => setActiveSection('profile')}
-          >
-            <User className="mr-3" size={20} />
-            <span>Profile</span>
-          </button>
-          
-          <button 
-            className={`w-full flex items-center p-3 rounded text-left ${
-              activeSection === 'forums' 
-                ? 'bg-blue-100 text-blue-600 font-medium' 
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-            onClick={() => setActiveSection('forums')}
-          >
-            <MessageCircle className="mr-3" size={20} />
-            <span>Forums</span>
-          </button>
-          
-          <button 
-            className={`w-full flex items-center p-3 rounded text-left ${
-              activeSection === 'messages' 
-                ? 'bg-blue-100 text-blue-600 font-medium' 
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-            onClick={() => setActiveSection('messages')}
-          >
-            <MessageSquare className="mr-3" size={20} />
-            <span>Messages</span>
-          </button>
-          
-          <button 
-            className="w-full flex items-center p-3 rounded text-gray-700 hover:bg-gray-100 text-left mt-auto"
-          >
-            <LogOut className="mr-3" size={20} />
-            <span>Logout</span>
-          </button>
-        </nav>
-      </div>
-      
-      {/* Main Content Area - 80% width */}
-      <div className="w-4/5 p-6 flex flex-col h-screen">
-        {/* Top Profile Section - 35% height */}
-        <div className="h-2/5 bg-white rounded-lg shadow-md mb-6 flex overflow-hidden border border-gray-200">
-          {/* Profile Details - Left */}
-          <div className="w-3/5 p-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">{alumniProfile.name}</h2>
-            <div className="space-y-3 text-gray-700">
-              <p><span className="text-blue-600 font-medium">Current Role:</span> {alumniProfile.currentRole}</p>
-              <p><span className="text-blue-600 font-medium">Company:</span> {alumniProfile.company}</p>
-              <p><span className="text-blue-600 font-medium">Major:</span> {alumniProfile.major}</p>
-              <p><span className="text-blue-600 font-medium">Graduated:</span> {alumniProfile.graduationYear}</p>
-              <p><span className="text-blue-600 font-medium">Email:</span> {alumniProfile.email}</p>
-            </div>
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <div className="min-h-screen flex flex-1">
+        {/* Left Sidebar */}
+        <div className="w-64 bg-white shadow-md z-10 flex flex-col">
+          <div className="p-6 border-b border-gray-200">
+            <h1 className="text-2xl font-bold text-blue-600">GradLink</h1>
           </div>
           
-          {/* Profile Picture - Right */}
-          <div className="w-2/5 flex items-center justify-center bg-gray-100">
-            <div className="w-40 h-40 bg-blue-500 rounded-full flex items-center justify-center">
-              <Users className="text-white" size={64} />
-            </div>
+          {/* Navigation Items */}
+          <nav className="flex-1 p-4 space-y-2">
+            <button 
+              className={`w-full flex items-center p-3 rounded-lg text-left transition-colors ${
+                activeSection === 'dashboard' 
+                  ? 'bg-blue-600 text-white font-medium' 
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => setActiveSection('dashboard')}
+            >
+              <LayoutDashboard className="mr-3" size={20} />
+              <span>Dashboard</span>
+            </button>
+            
+            <button 
+              className={`w-full flex items-center p-3 rounded-lg text-left transition-colors ${
+                activeSection === 'profile' 
+                  ? 'bg-blue-600 text-white font-medium' 
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => {
+                setActiveSection('profile');
+                router.push("/alumni/profile");
+              }}
+            >
+              <User className="mr-3" size={20} />
+              <span>Profile</span>
+            </button>
+
+            
+            <button 
+              className={`w-full flex items-center p-3 rounded-lg text-left transition-colors ${
+                activeSection === 'jobs' 
+                  ? 'bg-blue-600 text-white font-medium' 
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() =>{
+                setActiveSection('jobs');
+                router.push("/jobs");
+              }}
+            >
+              <Briefcase className="mr-3" size={20} />
+              <span>Jobs</span>
+            </button>
+            
+            <button 
+              className={`w-full flex items-center p-3 rounded-lg text-left transition-colors ${
+                activeSection === 'events' 
+                  ? 'bg-blue-600 text-white font-medium' 
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => {
+                setActiveSection('events');
+                router.push("/events");
+              }}
+            >
+              <Calendar className="mr-3" size={20} />
+              <span>Events</span>
+            </button>
+          
+          </nav>
+          
+          <div onClick={handleLogout} className="p-4 border-t border-gray-200">
+            <button 
+              className="w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <LogOut className="mr-3" size={20} />
+              <span >Logout</span>
+            </button>
           </div>
         </div>
         
-        {/* Bottom Section - Split into Jobs and Events */}
-        <div className="h-3/5 flex gap-6">
-          {/* Job Opportunities - Left */}
-          <div className="w-1/2 bg-white shadow-md rounded-lg p-6 border border-gray-200">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold flex items-center text-gray-800">
-                <Briefcase className="mr-2 text-blue-600" size={20} />
-                Jobs Posted
-              </h3>
-              <div className="flex space-x-2">
-                <button className="bg-gray-100 p-2 rounded hover:bg-gray-200">
-                  <Plus size={16} className="text-blue-600" />
-                </button>
+        {/* Main Content Area */}
+        <div className="flex-1 p-6 overflow-auto">
+          {/* Header with search and notifications */}
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">
+              {activeSection === 'dashboard' && 'Dashboard'}
+              {activeSection === 'profile' && 'My Profile'}
+              {activeSection === 'forums' && 'Forums'}
+              {activeSection === 'jobs' && 'Job Opportunities'}
+              {activeSection === 'events' && 'Events'}
+            </h2>
+            
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <input 
+                  type="text" 
+                  placeholder="Search..." 
+                  className="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                />
+                <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
               </div>
-            </div>
-            <div className="overflow-y-auto max-h-64">
-              {jobOpportunities.map(job => (
-                <div 
-                  key={job.id} 
-                  className="flex justify-between items-center p-4 border-b border-gray-200 hover:bg-gray-50 transition"
-                >
-                  <div>
-                    <h4 className="font-semibold text-gray-800">{job.title}</h4>
-                    <p className="text-gray-600">{job.company} • {job.location}</p>
-                    {job.alumniNetwork && (
-                      <span className="text-blue-600 text-sm font-medium">
-                        Alumni Network Opportunity
-                      </span>
-                    )}
-                  </div>
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded flex items-center hover:bg-blue-600">
-                    View <ArrowRight className="ml-2" size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Events - Right */}
-          <div className="w-1/2 bg-white shadow-md rounded-lg p-6 border border-gray-200">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold flex items-center text-gray-800">
-                <Calendar className="mr-2 text-blue-600" size={20} />
-                Upcoming Events
-              </h3>
-              <button className="bg-gray-100 p-2 rounded hover:bg-gray-200">
-                <Plus size={16} className="text-blue-600" />
+              
+              <button className="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                <Bell size={20} className="text-gray-700" />
+                <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
               </button>
             </div>
-            <div className="overflow-y-auto max-h-64">
-              {events.map(event => (
-                <div 
-                  key={event.id} 
-                  className="p-4 border-b border-gray-200 hover:bg-gray-50 transition"
-                >
-                  <h4 className="font-semibold text-gray-800">{event.title}</h4>
-                  <p className="text-gray-600">{event.date} • {event.location}</p>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-gray-500 text-sm">
-                      {event.attendees} attending
-                    </span>
-                    <button className="bg-blue-100 text-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-200">
-                      RSVP
+          </div>
+
+          {/* Dashboard Content */}
+          {activeSection === 'dashboard' && (
+            <div className="space-y-6">
+              {/* Welcome Card */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-semibold mb-2">Welcome back, {loading.user ? 'Alumni' : displayUser.firstName.split(' ')[0]}!</h3>
+                {/* <p className="opacity-90">You have 2 new messages and 3 upcoming events this month.</p> */}
+              </div>
+              
+              
+              {/* Main Content Grid */}
+              <div className="grid grid-cols-2 gap-6">
+                
+                {/* My Events Card */}
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+                  <h3 className="font-semibold text-gray-800 flex items-center">
+                    <Calendar className="mr-2 text-blue-600" size={18} />
+                    My Events
+                  </h3>
+                  <div className="flex space-x-4">
+                    <button onClick={addEvent} className="text-blue-600 hover:bg-blue-50 rounded-full p-2">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v14m7-7H5" />
+                      </svg>
                     </button>
+                    <button onClick={()=>router.push("/events")} className="text-sm text-blue-600 hover:underline">View All</button>
                   </div>
                 </div>
-              ))}
+
+                  
+                  <div className="p-4">
+                    {loading.events ? (
+                      <div className="flex justify-center items-center h-32">
+                        <Loader2 className="animate-spin text-blue-600" size={24} />
+                      </div>
+                    ) : error.events ? (
+                      <div className="text-red-500 text-center py-4">{error.events}</div>
+                    ) : (
+                      <div className="space-y-4">
+                        {displayEvents.slice(0, 3).map(event => (
+                          <div key={event.id} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                            <h4 className="font-medium text-gray-800">{event.title}</h4>
+                            <p className="text-sm text-gray-500">
+                              {typeof event.date === 'string' ? event.date : formatDate(event.date)}
+                            </p>
+                            <div className="flex justify-between items-center mt-1">
+                              <span className="text-xs text-gray-500">
+                                {event.attendees} attending
+                              </span>
+                              <button className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs hover:bg-blue-200">
+                                RSVP
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* My Jobs Card */}
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 className="font-semibold text-gray-800 flex items-center">
+                      <Briefcase className="mr-2 text-blue-600" size={18} />
+                      My Job Postings
+                    </h3>
+                    <div className="flex space-x-4">
+                      <button onClick={addJob} className="text-blue-600 hover:bg-blue-50 rounded-full p-2">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v14m7-7H5" />
+                        </svg>
+                      </button>
+                      <button onClick={()=> router.push("/jobs")} className="text-sm text-blue-600 hover:underline">View All</button>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4">
+                    {loading.jobs ? (
+                      <div className="flex justify-center items-center h-32">
+                        <Loader2 className="animate-spin text-blue-600" size={24} />
+                      </div>
+                    ) : error.jobs ? (
+                      <div className="text-red-500 text-center py-4">{error.jobs}</div>
+                    ) : (
+                      <div className="space-y-4">
+                        {displayJobs.slice(0, 3).map(job => (
+                          <div key={job.id} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                            <h4 className="font-medium text-gray-800">{job.title}</h4>
+                            <p className="text-sm text-gray-600">{job.company} • {job.location}</p>
+                            <div className="flex justify-between items-center mt-1">
+                              <span className="text-xs text-gray-500">
+                                {job.applicants || 0} applicants
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                Posted: {job.postedOn}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+              </div>
             </div>
-          </div>
+          )}
+
         </div>
       </div>
-    </div>
-    <Footer/>
+      <Footer />
     </div>
   );
 };

@@ -30,12 +30,14 @@ export default function Register() {
   
       // Save token to localStorage
       localStorage.setItem("token", data.token);
-  
+      localStorage.setItem("role", role);
       // Redirect based on role
       if (role === "alumni") {
         router.push("/alumni/register");
-      } else {
-        router.push("/");
+      } else if(role === "admin") {
+        router.push("/admin");
+      } else if(role === "student") {
+        router.push("/student");
       }
     } catch (err) {
       setError(err.response?.data?.error || "Registration failed");
