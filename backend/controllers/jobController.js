@@ -30,7 +30,7 @@ class JobController {
         applicationLink,
         status: 'active' // Matches ENUM('active', 'closed')
       });
-      console.log(jobPosting);
+      
       res.status(201).json(jobPosting);
     } catch (error) {
       res.status(400).json({ error: error.message });
