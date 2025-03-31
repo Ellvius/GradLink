@@ -15,8 +15,9 @@ class UserController {
       }
   
       const newUser = await User.create({ username, email, password, role });
-  
-      res.status(201).json({ message: 'User registered successfully', userId: newUser.id, role: newUser.role });
+
+      const token = generateAuthToken(newUser);
+      res.status(201).json({ message: 'User registered successfully',token, userId: newUser.id, role: newUser.role });
     } catch (error) {
       console.error('Registration error:', error);
       res.status(500).json({ error: 'Failed to register user' });
