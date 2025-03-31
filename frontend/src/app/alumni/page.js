@@ -20,6 +20,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
 
 const AlumniDashboard = () => {
   const router = useRouter();
@@ -92,7 +93,7 @@ const AlumniDashboard = () => {
         setLoading(prev => ({ ...prev, events: false }));
       } catch (err) {
         console.error('Error fetching user events:', err);
-        setError(prev => ({ ...prev, events: 'Failed to load event data' }));
+        setError(prev => ({ ...prev, events: 'Failed to load event.Event data' }));
         setLoading(prev => ({ ...prev, events: false }));
       }
     };
@@ -302,7 +303,7 @@ console.log(displayUser);
         <div className="flex-1 p-6 overflow-auto">
           {/* Header with search and notifications */}
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">
+            <h2 className="text-4xl font-bold text-gray-800">
               {activeSection === 'dashboard' && 'Dashboard'}
               {activeSection === 'profile' && 'My Profile'}
               {activeSection === 'forums' && 'Forums'}
@@ -332,7 +333,7 @@ console.log(displayUser);
             <div className="space-y-6">
               {/* Welcome Card */}
               <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-6 shadow-md">
-                <h3 className="text-xl font-semibold mb-2">Welcome back, {loading.user ? 'Alumni' : displayUser.firstName.split(' ')[0]}!</h3>
+                <h3 className="text-3xl font-bold mb-2">Welcome back, {loading.user ? 'Alumni' : displayUser.firstName.split(' ')[0]}!</h3>
                 {/* <p className="opacity-90">You have 2 new messages and 3 upcoming events this month.</p> */}
               </div>
               
@@ -343,7 +344,7 @@ console.log(displayUser);
                 {/* My Events Card */}
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                  <h3 className="font-semibold text-gray-800 flex items-center">
+                  <h3 className="font-bold text-2xl text-gray-800 flex items-center">
                     <Calendar className="mr-2 text-blue-600" size={18} />
                     My Events
                   </h3>
@@ -368,14 +369,16 @@ console.log(displayUser);
                     ) : (
                       <div className="space-y-4">
                         {displayEvents.slice(0, 3).map(event => (
-                          <div key={event.id} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
-                            <h4 className="font-medium text-gray-800">{event.title}</h4>
-                            <p className="text-sm text-gray-500">
-                              {typeof event.date === 'string' ? event.date : formatDate(event.date)}
+                          <div key={event.Event.id} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                            <h4 className="font-medium text-lg text-gray-800">{event.Event.title}</h4>
+                            <p className="text-md text-gray-500">
+                               <p className="text-md text-gray-500">
+                                {format(new Date(event.Event.startDateTime), "yyyy-MM-dd")}
+                              </p>
                             </p>
                             <div className="flex justify-between items-center mt-1">
-                              <span className="text-xs text-gray-500">
-                                {event.attendees} attending
+                              <span className="text-md text-gray-500">
+                                {event.Event.location}
                               </span>
                               <button className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs hover:bg-blue-200">
                                 RSVP
@@ -391,7 +394,7 @@ console.log(displayUser);
                 {/* My Jobs Card */}
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                   <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                    <h3 className="font-semibold text-gray-800 flex items-center">
+                    <h3 className="font-bold text-2xl text-gray-800 flex items-center">
                       <Briefcase className="mr-2 text-blue-600" size={18} />
                       My Job Postings
                     </h3>
@@ -416,14 +419,11 @@ console.log(displayUser);
                       <div className="space-y-4">
                         {displayJobs.slice(0, 3).map(job => (
                           <div key={job.id} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
-                            <h4 className="font-medium text-gray-800">{job.title}</h4>
-                            <p className="text-sm text-gray-600">{job.company} • {job.location}</p>
+                            <h4 className="font-medium text-gray-800">{job.jobTitle}</h4>
+                            <p className="text-md text-gray-600">{job.companyName} • {job.location}</p>
                             <div className="flex justify-between items-center mt-1">
-                              <span className="text-xs text-gray-500">
-                                {job.applicants || 0} applicants
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                Posted: {job.postedOn}
+                              <span className="text-md text-gray-500">
+                                Posted: {format(new Date(job.createdAt), "yyyy-MM-dd")}
                               </span>
                             </div>
                           </div>
