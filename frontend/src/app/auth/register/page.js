@@ -19,7 +19,7 @@ export default function Register() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-
+  
     try {
       const { data } = await axios.post("http://localhost:5000/api/users/register", {
         username,
@@ -27,12 +27,16 @@ export default function Register() {
         password,
         role,
       });
-
+  
       // Save token to localStorage
       localStorage.setItem("token", data.token);
-
-      // Redirect to home page
-      router.push("/");
+  
+      // Redirect based on role
+      if (role === "alumni") {
+        router.push("/alumni/profile");
+      } else {
+        router.push("/");
+      }
     } catch (err) {
       setError(err.response?.data?.error || "Registration failed");
       console.error(err);
@@ -40,6 +44,7 @@ export default function Register() {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
