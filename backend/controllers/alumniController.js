@@ -181,30 +181,44 @@ class AlumniController {
     }
   }
 
-
-
   async postJob(req, res) {
     try {
-        const { title, company, location, description, requirements, applicationLink } = req.body;
+        const { 
+            jobTitle, 
+            companyName, 
+            jobType, 
+            location, 
+            description, 
+            requirements, 
+            applicationLink, 
+            expirationDate, 
+            postedBy 
+        } = req.body;
 
-        if (!title || !company || !location || !description || !requirements || !applicationLink) {
+        // Validate required fields
+        if (!jobTitle || !companyName || !jobType || !location || !description || !requirements || !applicationLink || !expirationDate || !postedBy) {
             return res.status(400).json({ error: 'All fields are required' });
         }
 
+        // Create job posting
         const job = await JobPosting.create({
-            title,
-            company,
+            jobTitle,
+            companyName,
+            jobType,
             location,
             description,
             requirements,
-            applicationLink
+            applicationLink,
+            expirationDate,
+            postedBy,
+            status: 'active' // Default value
         });
 
         res.status(201).json({ message: 'Job posted successfully', job });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-  }
+}
 
 
   async createEvent(req, res) {
