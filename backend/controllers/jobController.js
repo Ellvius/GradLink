@@ -17,7 +17,7 @@ class JobController {
         expirationDate,
         applicationLink
       } = req.body;
-
+      
       const jobPosting = await JobPosting.create({
         companyName,
         jobTitle,
@@ -30,7 +30,7 @@ class JobController {
         applicationLink,
         status: 'active' // Matches ENUM('active', 'closed')
       });
-
+      console.log(jobPosting);
       res.status(201).json(jobPosting);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -51,7 +51,6 @@ class JobController {
         applicationLink,
         status
       } = req.body;
-
       const jobPosting = await JobPosting.findByPk(req.params.jobId);
 
       if (!jobPosting) {
@@ -73,7 +72,7 @@ class JobController {
       jobPosting.expirationDate = expirationDate || jobPosting.expirationDate;
       jobPosting.applicationLink = applicationLink || jobPosting.applicationLink;
       jobPosting.status = status || jobPosting.status; // Only 'active' or 'closed' allowed
-
+      console.log(jobPosting);
       await jobPosting.save();
 
       res.json(jobPosting);
