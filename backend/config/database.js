@@ -5,12 +5,12 @@ require('dotenv').config();
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   logging: false,
-  // dialectOptions: {
-  //   ssl: {
-  //     require: true,
-  //     rejectUnauthorized: false, // Allow self-signed certificates (for Render)
-  //   },
-  // },
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false, // Allow self-signed certificates (for Render)
+    },
+  },
   pool: {
     max: 5,
     min: 0,
