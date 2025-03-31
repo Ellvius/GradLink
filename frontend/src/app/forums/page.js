@@ -1,5 +1,5 @@
 "use client"
-
+import Navbar from '@/components/Navbar';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Search, MessageSquare, Users, Briefcase, BookOpen, ArrowUpRight } from 'lucide-react';
@@ -75,6 +75,7 @@ export default function ForumHome() {
   return (
     <div>
     <div className="max-w-6xl mx-auto py-6 ">
+      <Navbar />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-gray-800">GradLink Forums</h1>
         <div className="relative w-1/3">

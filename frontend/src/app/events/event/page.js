@@ -1,5 +1,5 @@
 "use client";
-
+import Navbar from '@/components/Navbar';
 import React, { useState } from 'react';
 import { Calendar, MapPin, Users, Clock, ArrowLeft, Share2, BookmarkIcon } from 'lucide-react';
 import Footer from '@/components/footer';
@@ -58,6 +58,7 @@ const EventDetailPage = () => {
 
   return (
     <div className="bg-white min-h-screen text-gray-900">
+      <Navbar className="bg-white shadow-md" />
       <div className="container mx-auto p-6 max-w-4xl">
         {/* Back Button */}
         <div className="flex items-center mb-6">

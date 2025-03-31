@@ -1,5 +1,5 @@
 "use client";
-
+import Navbar from '@/components/Navbar';
 import React, { useState, useEffect } from 'react';
 import Footer from '@/components/footer';
 import { 
@@ -193,6 +193,7 @@ export default function EventsManagement() {
 
   return (
     <div className="container mx-auto p-4">
+      <Navbar />
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Event Management</h1>
         <Button onClick={openAddDialog} className="flex items-center">

@@ -1,5 +1,6 @@
 "use client";
 import Footer from '@/components/footer';
+import Navbar from '@/components/Navbar';
 import React, { useState } from 'react';
 import { 
   Briefcase, 
@@ -55,6 +56,7 @@ Key Responsibilities:
 
   return (
     <div>   <div className="bg-gray-50 min-h-screen p-6">
+      <Navbar />
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">

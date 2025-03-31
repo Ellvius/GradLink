@@ -1,5 +1,5 @@
 "use client";
-
+import Navbar from '@/components/Navbar';
 import Footer from '@/components/footer';
 import React, { useState } from 'react';
 import { 
@@ -85,6 +85,7 @@ const StudentDashboard = () => {
 
   return (
     <div>
+      <Navbar />
       <div className="min-h-screen bg-gray-100 p-6">
       <div className="container mx-auto">
         {/* Header */}

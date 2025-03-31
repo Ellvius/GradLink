@@ -1,5 +1,5 @@
 "use client";
-
+import Navbar from '@/components/Navbar';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
@@ -125,6 +125,8 @@ export default function StudentRegistration() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navbar />
+
       <Head>
         <title>Student Registration - Gradlink</title>
         <meta name="description" content="Register for Gradlink and start building your professional network" />

@@ -1,5 +1,5 @@
 "use client";
-
+import Navbar from "@/components/Navbar";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Alumni.css";
@@ -43,6 +43,7 @@ export default function AlumniList() {
 
   return (
     <div className="container mx-auto p-5">
+      <Navbar />
       <h1 className="text-3xl font-bold mb-4">Alumni Directory</h1>
       <input
         type="text"

@@ -1,5 +1,5 @@
 "use client";
-
+import Navbar from "@/components/Navbar";
 import { useState } from "react";
 // import { useRouter } from "next/router";
 import Head from "next/head";
@@ -126,6 +126,7 @@ export default function AlumniRegistration() {
 
   return (
     <>
+      <Navbar />
       <Head>
         <title>Alumni Registration - Complete Your Profile</title>
         <meta

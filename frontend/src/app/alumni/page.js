@@ -1,5 +1,5 @@
 "use client";
-
+import Navbar from '@/components/Navbar';
 import Footer from '@/components/footer';
 import React, { useState } from 'react';
 import { 
@@ -58,6 +58,7 @@ const AlumniDashboard = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen pt-4">
+      <Navbar />
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">

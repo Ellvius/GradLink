@@ -1,5 +1,5 @@
 "use client";
-
+import Navbar from '@/components/Navbar';
 import React, { useState } from 'react';
 import { Search, Filter, MapPin, Briefcase, GraduationCap, ChevronDown, ChevronUp, X } from 'lucide-react';
 import Footer from '@/components/footer';
@@ -97,6 +97,7 @@ const AlumniSearchPage = () => {
 
   return (
     <div className="bg-white min-h-screen text-gray-900">
+      <Navbar />
       <div className="container mx-auto p-6">
         <h1 className="text-3xl font-bold mb-6">Find Alumni</h1>
         

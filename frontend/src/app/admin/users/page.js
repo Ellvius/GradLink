@@ -1,5 +1,5 @@
 "use client";
-
+import Navbar from '@/components/Navbar';
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -75,6 +75,7 @@ export default function ManageUsersPage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
+      <Navbar />
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Manage Users</CardTitle>
