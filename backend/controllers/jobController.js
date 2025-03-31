@@ -147,6 +147,34 @@ class JobController {
       res.status(500).json({ error: error.message });
     }
   }
+
+  async appliedJobs(req, res) {
+    try {
+      const userId = req.user.id; // Get logged-in user ID
+  
+      // Ensure only students can view their applications
+      if (req.user.role !== 'student') {
+        return res.status(403).json({ error: 'Only students can view job applications' });
+      }
+  
+      // Fetch applications along with job details
+      const applications = await Application.findAll({
+        where: { studentId: userId },
+        include: [
+          {
+            model: JobPosting,
+            as: 'JobPosting', // Ensure this matches the alias in your associations
+            attributes: ['id', 'jobTitle', 'companyName', 'location', 'createdAt']
+          }
+        ]
+      });
+  
+      res.status(200).json(applications);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  
 }
 
 module.exports = new JobController();

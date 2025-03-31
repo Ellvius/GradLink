@@ -47,7 +47,7 @@ export default function JobDetails() {
 
   const handleApply = async () => {
     try {
-      await axios.post(`http://localhost:5000/api/jobs/${jobId}`,
+      await axios.post(`http://localhost:5000/api/jobs/${jobId}/apply`,
       {
         headers: {
           "Content-Type": "application/json",
