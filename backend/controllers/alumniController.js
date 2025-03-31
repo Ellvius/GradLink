@@ -17,60 +17,62 @@ class AlumniController {
         lastName,
         gender,
         dateOfBirth,
-        contactInformation,
+        email,
+        phone,
         graduationYear,
         degreeProgram,
         major,
-        employmentInformation,
-        profilePicture,
-        socialMediaLinks,
-        privacySettings
+        company,
+        jobTitle,
+        privacySettings,
+        linkedinUrl,
+        twitterUrl,
+        facebookUrl,
+        instagramUrl
       } = req.body;
+
+      // Convert empty strings to null
+      const sanitize = (value) => (value === '' ? null : value);
+
+      const sanitizedData = {
+        userId,
+        firstName,
+        lastName,
+        gender,
+        dateOfBirth,
+        email,
+        phone,
+        graduationYear,
+        degreeProgram,
+        major,
+        company,
+        jobTitle,
+        privacySettings,
+        linkedinUrl: sanitize(linkedinUrl),
+        twitterUrl: sanitize(twitterUrl),
+        facebookUrl: sanitize(facebookUrl),
+        instagramUrl: sanitize(instagramUrl)
+      };
+
+      console.log(sanitizedData);
 
       const [profile, created] = await AlumniProfile.findOrCreate({
         where: { userId },
-        defaults: {
-          userId,
-          firstName,
-          lastName,
-          gender,
-          dateOfBirth,
-          contactInformation,
-          graduationYear,
-          degreeProgram,
-          major,
-          employmentInformation,
-          profilePicture,
-          socialMediaLinks,
-          privacySettings
-        }
+        defaults: sanitizedData
       });
 
       if (!created) {
         // Update existing profile
-        Object.assign(profile, {
-          firstName,
-          lastName,
-          gender,
-          dateOfBirth,
-          contactInformation,
-          graduationYear,
-          degreeProgram,
-          major,
-          employmentInformation,
-          profilePicture,
-          socialMediaLinks,
-          privacySettings
-        });
-
+        Object.assign(profile, sanitizedData);
         await profile.save();
       }
 
       res.status(created ? 201 : 200).json(profile);
     } catch (error) {
+      console.log(error);
       res.status(400).json({ error: error.message });
     }
-  }
+}
 
   
 
