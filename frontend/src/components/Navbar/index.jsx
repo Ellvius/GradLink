@@ -40,9 +40,9 @@ class Navbar extends React.Component {
             <Link href="/forums" className="hover:text-gray-300 transition">
               Forums
             </Link>
-            <Link href="/alumni" className="hover:text-gray-300 transition">
+            {/* <Link href="/alumni" className="hover:text-gray-300 transition">
               Alumni
-            </Link>
+            </Link> */}
             <Link href="/jobs" className="hover:text-gray-300 transition">
               Jobs & Internships
             </Link>
