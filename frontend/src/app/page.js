@@ -110,9 +110,6 @@ const TopicPage = () => {
   return (
     <div>
       <Navbar />
-      <button onClick={()=>{console.log("logout");
-        localStorage.clear();
-        }} className="bg-blue-600">logout</button>
       <div className="mx-auto max-w-4xl p-4">
         <h1 className="text-2xl font-bold mb-2">{topic.title}</h1>
         <div className="flex gap-2 mb-4">
