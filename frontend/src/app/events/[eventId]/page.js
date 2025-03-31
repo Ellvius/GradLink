@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 import { Calendar, MapPin, Users, Clock, ArrowLeft, Share2, BookmarkIcon } from "lucide-react";
 import Footer from "@/components/footer";
-import { cn } from "@/lib/utils";
+import Navbar from "@/components/Navbar";
 
 const EventDetailPage = () => {
   const { eventId } = useParams(); // Get event ID from URL
@@ -71,14 +71,10 @@ const EventDetailPage = () => {
   console.log("Hiii...");
   console.log(event);
   return (
+    <>
     <div className="bg-white min-h-screen text-gray-900">
+      <Navbar />
       <div className="container mx-auto p-6 max-w-4xl">
-        {/* Back Button */}
-        <div className="flex items-center mb-6">
-          <button className="flex items-center text-blue-600 hover:text-blue-800">
-            <ArrowLeft className="mr-2" /> Back to Events
-          </button>
-        </div>
 
         {/* Event Header */}
         <div className="bg-blue-50 p-6 rounded-lg mb-6">
@@ -169,8 +165,8 @@ const EventDetailPage = () => {
           </div>
         </div> */}
       </div>
-      <Footer className="mt-12" />
     </div>
+      <Footer className="mt-12" /></>
   );
 };
 
