@@ -69,13 +69,13 @@ class Navbar extends React.Component {
                   <Link href="/profile" className="block px-4 py-2 text-sm text-white hover:bg-gray-400">
                     View Profile
                   </Link>
-                  <button 
+                  <a href ="/auth/login"><button 
                     onClick={this.handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-400"
                   >
-                    <Link href="/auth/login">
-                    Logout</Link>
-                  </button>
+                    Logout
+                  </button></a>
+                  
                 </div>
               )}
             </div>
