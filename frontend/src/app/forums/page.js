@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Search, MessageSquare, Users, Briefcase, BookOpen, ArrowUpRight } from 'lucide-react';
 import Footer from '@/components/footer';
+import Navbar from '@/components/Navbar';
 export default function ForumHome() {
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -74,6 +75,7 @@ export default function ForumHome() {
 
   return (
     <div>
+      <Navbar/>
     <div className="max-w-6xl mx-auto py-6 ">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-gray-800">GradLink Forums</h1>
