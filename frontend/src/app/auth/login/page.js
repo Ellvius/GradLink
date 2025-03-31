@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
+import { RouteIcon } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -28,7 +29,13 @@ export default function Login() {
       localStorage.setItem("token", data.token);
 
       // Redirect to home page
-      router.push("/");
+      if(data.user.role === 'alumni'){
+        router.push("/alumni");
+      } else if(data.user.role === 'admin'){
+        router.push("/admin");
+      } else if(data.user.role === 'student'){
+        router.push("/student");
+      }
     } catch (err) {
       setError(err.response?.data?.error || "Invalid email or password");
       console.error(err);

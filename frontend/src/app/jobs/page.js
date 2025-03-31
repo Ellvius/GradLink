@@ -57,8 +57,8 @@ export default function JobList() {
   return (
     <>
       <Navbar />
-      <div className="bg-gray-50 min-h-screen text-gray-900">
-        <div className="container mx-auto px-4 py-12 max-w-6xl">
+      <div className="bg-gray-50 text-gray-900">
+        <div className="min-h-screen container mx-auto px-4 py-12 max-w-6xl">
           <header className="mb-12 text-center">
             <h1 className="text-6xl font-extrabold text-blue-800 mb-2">GradLink Job Opportunities</h1>
             <p className="text-gray-600 max-w-2xl mx-auto text-xl">

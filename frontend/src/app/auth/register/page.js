@@ -33,7 +33,7 @@ export default function Register() {
   
       // Redirect based on role
       if (role === "alumni") {
-        router.push("/alumni/profile");
+        router.push("/alumni/register");
       } else {
         router.push("/");
       }
