@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -64,7 +64,7 @@ const Navbar = () => {
               <div className="absolute right-0 mt-2 w-48 bg-gray-800 py-1 z-10">
                 {role === "alumni" && (
                   <Link
-                    href="/alumni/profile"
+                    href="/alumni"
                     className="block px-4 py-2 text-sm text-white hover:bg-gray-400"
                   >
                     View Profile

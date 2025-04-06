@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 
-export default function CreateJobPosting() {
+export default function EditJobPosting() {
+const { jobId } = useParams();
+  
   const [companyName, setCompanyName] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [jobType, setJobType] = useState("Full-time");
@@ -17,9 +19,51 @@ export default function CreateJobPosting() {
   const [status, setStatus] = useState("active");
   
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState("");
   
   const router = useRouter();
+  
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      if (!jobId) return;
+      
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Authentication required. Please log in.");
+        }
+        
+        const { data } = await axios.get(`http://localhost:5000/api/jobs/${jobId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        
+        // Format date to YYYY-MM-DD for the date input
+        const formattedDate = data.expirationDate ? 
+          new Date(data.expirationDate).toISOString().split('T')[0] : 
+          "";
+        
+        setCompanyName(data.companyName || "");
+        setJobTitle(data.jobTitle || "");
+        setJobType(data.jobType || "Full-time");
+        setLocation(data.location || "");
+        setDescription(data.description || "");
+        setRequirements(data.requirements || "");
+        setApplicationLink(data.applicationLink || "");
+        setExpirationDate(formattedDate);
+        setStatus(data.status || "active");
+      } catch (err) {
+        setError(err.response?.data?.error || "Failed to fetch job details");
+        console.error(err);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+    
+    fetchJobDetails();
+  }, [jobId]);
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +72,6 @@ export default function CreateJobPosting() {
   
     try {
       const token = localStorage.getItem("token");
-      console.log("Token:", token); // Log the token to check if it's available
       if (!token) {
         throw new Error("Authentication required. Please log in.");
       }
@@ -45,7 +88,7 @@ export default function CreateJobPosting() {
         status
       };
       
-      const { data } = await axios.post("http://localhost:5000/api/jobs", 
+      await axios.put(`http://localhost:5000/api/jobs/${jobId}`, 
         jobData,
         {
           headers: {
@@ -54,9 +97,9 @@ export default function CreateJobPosting() {
         }
       );
       
-      router.push(`/jobs/${data.id}`);
+      router.push(`/jobs/${jobId}`);
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to create job posting");
+      setError(err.response?.data?.error || "Failed to update job posting");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -65,10 +108,21 @@ export default function CreateJobPosting() {
   
   const jobTypes = ["Full-time", "Part-time", "Contract", "Internship", "Remote"];
   
+//   if (isFetching) {
+//     return (
+//       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+//         <div className="text-center">
+//           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+//           <p className="mt-2 text-gray-700">Loading job details...</p>
+//         </div>
+//       </div>
+//     );
+//   }
+  
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-10">
       <div className="max-w-2xl w-full bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-900">Create Job Posting</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-900">Edit Job Posting</h2>
         
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded mt-4">
@@ -191,15 +245,23 @@ export default function CreateJobPosting() {
             ></textarea>
           </div>
           
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full py-2 px-4 text-white font-medium rounded-md shadow-sm bg-blue-600 hover:bg-blue-700 ${
-              isLoading ? "opacity-70 cursor-not-allowed" : ""
-            }`}
-          >
-            {isLoading ? "Creating..." : "Create Job Posting"}
-          </button>
+          <div className="flex space-x-4">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`flex-1 py-2 px-4 text-white font-medium rounded-md shadow-sm bg-blue-600 hover:bg-blue-700 ${
+                isLoading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+            >
+              {isLoading ? "Updating..." : "Update Job Posting"}
+            </button>
+            
+            <Link href={`/jobs/${jobId}`}>
+              <span className="flex-1 py-2 px-4 text-gray-700 font-medium rounded-md shadow-sm border border-gray-300 hover:bg-gray-50 inline-block text-center">
+                Cancel
+              </span>
+            </Link>
+          </div>
         </form>
         
         <p className="text-center text-gray-600 mt-4">
