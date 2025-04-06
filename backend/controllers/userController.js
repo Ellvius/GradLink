@@ -6,10 +6,10 @@ const { generateAuthToken } = require('../middleware/authMiddleware');
 class UserController {
 
     async registerUser (req, res) {
-      console.log("registering");
+      // console.log("registering");
     try {
       const { username, email, password, role } = req.body;
-      console.log(role);
+      // console.log(role);
       if (!['student', 'alumni', 'admin'].includes(role)) {
         return res.status(400).json({ error: 'Invalid role' });
       }

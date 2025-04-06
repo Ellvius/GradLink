@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Footer from '@/components/footer';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import axios from 'axios';
 import { 
   Users, 
@@ -19,8 +20,9 @@ import {
   Plus,
   Loader2
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/footer';
 
 const StudentDashBoard = () => {
   const router = useRouter();
@@ -135,91 +137,20 @@ const StudentDashBoard = () => {
   }
 
 
-  // Fallback data in case API fails
-  const fallbackUser = {
-    name: "Emily Rodriguez",
-    graduationYear: 2022,
-    major: "Computer Science",
-    currentRole: "Software Engineer",
-    company: "TechInnovate Solutions",
-    email: "emily.rodriguez@example.com",
-    location: "San Francisco, CA",
-    profilePicture: null
-  };
-
-  const fallbackEvents = [
-    {
-      id: 1,
-      title: "Alumni Networking Mixer",
-      date: "April 15, 2025",
-      location: "Virtual",
-      attendees: 45
-    },
-    {
-      id: 2,
-      title: "Industry Panel: Future of Tech",
-      date: "May 2, 2025",
-      location: "Campus Center",
-      attendees: 120
-    }
-  ];
-
-  const fallbackJobs = [
-    {
-      id: 1,
-      title: "Senior Software Developer",
-      company: "Global Tech Inc.",
-      location: "San Francisco, CA",
-      postedOn: "March 25, 2025",
-      applicants: 12
-    },
-    {
-      id: 2,
-      title: "Data Science Specialist",
-      company: "DataWorks Enterprise",
-      location: "New York, NY",
-      postedOn: "March 28, 2025",
-      applicants: 8
-    }
-  ];
-
-  const forumTopics = [
-    {
-      id: 1,
-      title: "Tech Career Transitions",
-      participants: 150,
-      newPosts: 12
-    },
-    {
-      id: 2,
-      title: "Startup Entrepreneurship",
-      participants: 87,
-      newPosts: 5
-    }
-  ];
-
   // Use actual data if available, otherwise use fallback
-  const displayUser = user || fallbackUser;
-  const displayEvents = userEvents.length > 0 ? userEvents : fallbackEvents;
-  const displayJobs = userJobs.length > 0 ? userJobs : fallbackJobs;
-console.log(displayUser);
-  // Format date for events
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
+  const displayUser = user ;
+  const displayEvents =  userEvents;
+  const displayJobs = userJobs;
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <div className="min-h-screen flex flex-1">
+      <Navbar />
+      <div className="min-h-[92vh] flex flex-1">
         {/* Left Sidebar */}
         <div className="w-64 bg-white shadow-md z-10 flex flex-col">
-          <div className="p-6 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-blue-600">GradLink</h1>
-          </div>
           
           {/* Navigation Items */}
-          <nav className="flex-1 p-4 space-y-2">
+          <nav className="flex-1 p-4 space-y-2 text-xl">
             <button 
               className={`w-full flex items-center p-3 rounded-lg text-left transition-colors ${
                 activeSection === 'dashboard' 
@@ -240,7 +171,7 @@ console.log(displayUser);
               }`}
               onClick={() => {
                 setActiveSection('profile');
-                router.push("/alumni/profile");
+                // router.push("/student/profile");
               }}
             >
               <User className="mr-3" size={20} />
@@ -282,7 +213,7 @@ console.log(displayUser);
           
           <div onClick={handleLogout} className="p-4 border-t border-gray-200">
             <button 
-              className="w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+              className="w-full flex items-center p-3 rounded-lg text-red-600 font-bold text-xl hover:bg-gray-100 transition-colors"
             >
               <LogOut className="mr-3" size={20} />
               <span >Logout</span>
@@ -301,31 +232,26 @@ console.log(displayUser);
               {activeSection === 'jobs' && 'Job Opportunities'}
               {activeSection === 'events' && 'Events'}
             </h2>
-            
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <input 
-                  type="text" 
-                  placeholder="Search..." 
-                  className="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                />
-                <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-              </div>
-              
-              <button className="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
-                <Bell size={20} className="text-gray-700" />
-                <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-              </button>
-            </div>
           </div>
 
           {/* Dashboard Content */}
           {activeSection === 'dashboard' && (
             <div className="space-y-6">
               {/* Welcome Card */}
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-6 shadow-md">
-                <h3 className="text-3xl font-bold mb-2">Welcome back, {loading.user ? 'Alumni' : displayUser.username.split(' ')[0]}!</h3>
-                {/* <p className="opacity-90">You have 2 new messages and 3 upcoming events this month.</p> */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-6 shadow-md flex justify-between">
+                <div>
+                  <h3 className="text-3xl font-bold mb-2">Welcome back</h3>
+                  <h3 className='text-4xl font-extrabold mb-2'> {loading.user ? 'Alumni' : displayUser.username.split(' ')[0]}!</h3>
+                </div>
+                <div className="w-40 h-40 rounded-full overflow-hidden border-2 border-white shadow-md mr-8">
+                  <Image
+                    src="/student.png"
+                    alt="User Avatar"
+                    width={160}
+                    height={160}
+                    className="object-cover"
+                  />
+                </div>
               </div>
               
               
@@ -394,14 +320,25 @@ console.log(displayUser);
                     ) : (
                       <div className="space-y-4">
                         {displayJobs.slice(0, 3).map((job, index) => (
-                          <div key={index} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
-                            <h4 className="font-medium text-gray-800">{job?.JobPosting?.jobTitle}</h4>
-                            <p className="text-md text-gray-600">{job?.JobPosting?.companyName} • {job?.JobPosting?.location}</p>
-                            <div className="flex justify-between items-center mt-1">
-                              <span className="text-md text-gray-500">
-                                Posted: {job?.JobPosting?.createdAt && format(new Date(job?.JobPosting?.createdAt), "yyyy-MM-dd")}
-                              </span>
+                          <div key={index} className="flex items-start justify-between border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                            <div>
+                              <h4 className="font-medium text-gray-800">{job?.JobPosting?.jobTitle}</h4>
+                              <p className="text-md text-gray-600">{job?.JobPosting?.companyName} • {job?.JobPosting?.location}</p>
+                              <div className="flex justify-between items-center mt-1">
+                                <span className="text-md text-gray-500">
+                                  Posted: {job?.JobPosting?.createdAt && format(new Date(job?.JobPosting?.createdAt), "yyyy-MM-dd")}
+                                </span>
+                              </div>
                             </div>
+                            <span
+                              className={`px-3 py-1 rounded-sm text-white text-sm font-medium
+                                ${job.status === 'pending' ? 'bg-yellow-500' :
+                                  job.status === 'rejected' ? 'bg-red-500' :
+                                  job.status === 'approved' ? 'bg-green-500' : 'bg-gray-400'}
+                              `}
+                            >
+                              {job?.status}
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -409,6 +346,43 @@ console.log(displayUser);
                   </div>
                 </div>
                 
+              </div>
+            </div>
+          )}
+
+          {/* Student Profile Content */}
+          {activeSection === 'profile' && (
+            <div className='w-full bg-white rounded-b-md border flex '>
+              <div className="max-w-3xl mx-8 mt-6 p-6">
+                <h2 className="text-3xl font-semibold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
+                  👤 User Information
+                </h2>
+                <div className="space-y-2 text-gray-700 text-xl">
+                  <p><span className="font-bold">ID:</span> {displayUser.id}</p>
+                  <p><span className="font-bold">Username:</span> {displayUser.username}</p>
+                  <p><span className="font-bold">Email:</span> {displayUser.email}</p>
+                  <p><span className="font-bold">Role:</span> {displayUser.role}</p>
+                  <p>
+                    <span className="font-bold">Status:</span>{' '}
+                    <span className={displayUser.accountStatus === 'active' ? 'text-green-600' : 'text-red-600'}>
+                      {displayUser.accountStatus}
+                    </span>
+                  </p>
+                  <p><span className="font-bold">Last Login:</span> {displayUser.lastLoginDate || 'N/A'}</p>
+                  <p><span className="font-bold">Created At:</span> {new Date(displayUser.createdAt).toLocaleString()}</p>
+                  <p><span className="font-bold">Updated At:</span> {new Date(displayUser.updatedAt).toLocaleString()}</p>
+                </div>
+              </div>
+              <div className='flex justify-center items-center ml-24'>
+                <div className="w-60 h-60 rounded-full overflow-hidden border-2 border-white shadow-md">
+                    <Image
+                      src="/student.png"
+                      alt="User Avatar"
+                      width={240}
+                      height={240}
+                      className="object-cover"
+                      />
+                </div>
               </div>
             </div>
           )}
