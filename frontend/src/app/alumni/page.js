@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Footer from '@/components/footer';
+import Image from 'next/image';
 import axios from 'axios';
 import { 
   Users, 
@@ -17,10 +17,19 @@ import {
   Calendar,
   Settings,
   Plus,
-  Loader2
+  Loader2,
+  Mail, 
+  Phone, 
+  Linkedin, 
+  Twitter, 
+  Facebook, 
+  Instagram,
+  GraduationCap,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/footer';
 
 const AlumniDashboard = () => {
   const router = useRouter();
@@ -38,7 +47,9 @@ const AlumniDashboard = () => {
     events: null,
     jobs: null
   });
-  
+
+  const [profile, setProfile] = useState(null);
+  const [activeTab, setActiveTab] = useState('personal');  
   // Get auth token from localStorage
   const getAuthToken = () => {
     if (typeof window !== 'undefined') {
@@ -127,91 +138,63 @@ const AlumniDashboard = () => {
     
     fetchUserJobs();
   }, []);
-
+  
   const handleLogout = ()=>{
     console.log("logout");
     localStorage.clear();
     router.push("/auth/login");
   }
-
+  
   const addEvent = () => {
     console.log('Add new event');
-    router.push("/event/create");
+    router.push("/events/create");
   }
+  
+  const fetchAlumniProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+      
+      const response = await axios.get(`http://localhost:5000/api/alumni/profile/`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch alumni profile:", error);
+      return null;
+    }
+  };
+  
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const data = await fetchAlumniProfile();
+        setProfile(data);
+      } catch (error) {
+        console.error("Failed to load profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfile();
+  }, []);
 
   const addJob = () => {
     console.log('Add new job');
-    router.push("/job/create");
+    router.push("/jobs/create");
   }
 
-  // Fallback data in case API fails
-  const fallbackUser = {
-    name: "Emily Rodriguez",
-    graduationYear: 2022,
-    major: "Computer Science",
-    currentRole: "Software Engineer",
-    company: "TechInnovate Solutions",
-    email: "emily.rodriguez@example.com",
-    location: "San Francisco, CA",
-    profilePicture: null
-  };
-
-  const fallbackEvents = [
-    {
-      id: 1,
-      title: "Alumni Networking Mixer",
-      date: "April 15, 2025",
-      location: "Virtual",
-      attendees: 45
-    },
-    {
-      id: 2,
-      title: "Industry Panel: Future of Tech",
-      date: "May 2, 2025",
-      location: "Campus Center",
-      attendees: 120
-    }
-  ];
-
-  const fallbackJobs = [
-    {
-      id: 1,
-      title: "Senior Software Developer",
-      company: "Global Tech Inc.",
-      location: "San Francisco, CA",
-      postedOn: "March 25, 2025",
-      applicants: 12
-    },
-    {
-      id: 2,
-      title: "Data Science Specialist",
-      company: "DataWorks Enterprise",
-      location: "New York, NY",
-      postedOn: "March 28, 2025",
-      applicants: 8
-    }
-  ];
-
-  const forumTopics = [
-    {
-      id: 1,
-      title: "Tech Career Transitions",
-      participants: 150,
-      newPosts: 12
-    },
-    {
-      id: 2,
-      title: "Startup Entrepreneurship",
-      participants: 87,
-      newPosts: 5
-    }
-  ];
-
   // Use actual data if available, otherwise use fallback
-  const displayUser = user || fallbackUser;
-  const displayEvents = userEvents.length > 0 ? userEvents : fallbackEvents;
-  const displayJobs = userJobs.length > 0 ? userJobs : fallbackJobs;
-console.log(displayUser);
+  const displayUser = user ;
+  const displayEvents = userEvents;
+  const displayJobs = userJobs;
   // Format date for events
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -220,15 +203,13 @@ console.log(displayUser);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <div className="min-h-screen flex flex-1">
+      <Navbar/>
+      <div className="min-h-[92vh] flex flex-1">
         {/* Left Sidebar */}
         <div className="w-64 bg-white shadow-md z-10 flex flex-col">
-          <div className="p-6 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-blue-600">GradLink</h1>
-          </div>
           
           {/* Navigation Items */}
-          <nav className="flex-1 p-4 space-y-2">
+          <nav className="flex-1 p-4 space-y-2 text-xl">
             <button 
               className={`w-full flex items-center p-3 rounded-lg text-left transition-colors ${
                 activeSection === 'dashboard' 
@@ -249,7 +230,7 @@ console.log(displayUser);
               }`}
               onClick={() => {
                 setActiveSection('profile');
-                router.push("/alumni/profile");
+                // router.push("/alumni/profile");
               }}
             >
               <User className="mr-3" size={20} />
@@ -290,8 +271,8 @@ console.log(displayUser);
           </nav>
           
           <div onClick={handleLogout} className="p-4 border-t border-gray-200">
-            <button 
-              className="w-full flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+          <button 
+              className="w-full flex items-center p-3 rounded-lg text-red-600 font-bold text-xl hover:bg-gray-100 transition-colors"
             >
               <LogOut className="mr-3" size={20} />
               <span >Logout</span>
@@ -310,32 +291,30 @@ console.log(displayUser);
               {activeSection === 'jobs' && 'Job Opportunities'}
               {activeSection === 'events' && 'Events'}
             </h2>
-            
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <input 
-                  type="text" 
-                  placeholder="Search..." 
-                  className="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                />
-                <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-              </div>
-              
-              <button className="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
-                <Bell size={20} className="text-gray-700" />
-                <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-              </button>
-            </div>
           </div>
 
           {/* Dashboard Content */}
           {activeSection === 'dashboard' && (
             <div className="space-y-6">
               {/* Welcome Card */}
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-6 shadow-md">
-                <h3 className="text-3xl font-bold mb-2">Welcome back, {loading.user ? 'Alumni' : displayUser.firstName.split(' ')[0]}!</h3>
-                {/* <p className="opacity-90">You have 2 new messages and 3 upcoming events this month.</p> */}
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-6 shadow-md flex justify-between items-center">
+                <div>
+                  <h3 className="text-3xl font-bold mb-2">Welcome back</h3>
+                  <h3 className="text-4xl font-extrabold mb-2">
+                    {loading.user ? 'Alumni' : displayUser.firstName.split(' ')[0]}!
+                  </h3>
+                </div>
+                <div className="w-40 h-40 rounded-full overflow-hidden border-2 border-white shadow-md mr-8">
+                  <Image
+                    src="/alumni.png"
+                    alt="User Avatar"
+                    width={160}
+                    height={160}
+                    className="object-cover"
+                  />
+                </div>
               </div>
+
               
               
               {/* Main Content Grid */}
@@ -346,15 +325,15 @@ console.log(displayUser);
                 <div className="p-4 border-b border-gray-200 flex justify-between items-center">
                   <h3 className="font-bold text-2xl text-gray-800 flex items-center">
                     <Calendar className="mr-2 text-blue-600" size={18} />
-                    My Events
+                    Registered Events
                   </h3>
                   <div className="flex space-x-4">
-                    <button onClick={addEvent} className="text-blue-600 hover:bg-blue-50 rounded-full p-2">
+                    <button onClick={addEvent} className="text-white hover:bg-blue-900 rounded-full p-3 flex bg-blue-600">
+                    <h1 className='pr-2 text-md'>Post event</h1>
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v14m7-7H5" />
                       </svg>
                     </button>
-                    <button onClick={()=>router.push("/events")} className="text-sm text-blue-600 hover:underline">View All</button>
                   </div>
                 </div>
 
@@ -367,9 +346,9 @@ console.log(displayUser);
                     ) : error.events ? (
                       <div className="text-red-500 text-center py-4">{error.events}</div>
                     ) : (
-                      <div className="space-y-4">
+                      <div className="space-y-4 max-h-76 overflow-y-auto pr-2">
 
-                        {displayEvents.slice(0, 3).map((event, index) => (
+                        {displayEvents.map((event, index) => (
                           <div key={index} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                             <h4 className="font-medium text-lg text-gray-800">{event?.Event?.title}</h4>
                                <p className="text-md text-gray-500">
@@ -396,12 +375,12 @@ console.log(displayUser);
                       My Job Postings
                     </h3>
                     <div className="flex space-x-4">
-                      <button onClick={addJob} className="text-blue-600 hover:bg-blue-50 rounded-full p-2">
+                      <button onClick={addJob} className="text-white hover:bg-blue-900 rounded-full p-3 flex bg-blue-600">
+                        <h1 className='pr-2'>Post Job</h1> 
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v14m7-7H5" />
                         </svg>
                       </button>
-                      <button onClick={()=> router.push("/jobs")} className="text-sm text-blue-600 hover:underline">View All</button>
                     </div>
                   </div>
                   
@@ -413,8 +392,10 @@ console.log(displayUser);
                     ) : error.jobs ? (
                       <div className="text-red-500 text-center py-4">{error.jobs}</div>
                     ) : (
-                      <div className="space-y-4">
-                        {displayJobs.slice(0, 3).map(job => (
+                      <div className="space-y-4 max-h-76 overflow-y-auto pr-2">
+                        {displayJobs
+                        .filter(job => job.poster.id === displayUser.userId)
+                        .map(job => ( 
                           <div key={job.id} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                             <h4 className="font-medium text-gray-800">{job.jobTitle}</h4>
                             <p className="text-md text-gray-600">{job.companyName} • {job.location}</p>
@@ -431,6 +412,276 @@ console.log(displayUser);
                 </div>
                 
               </div>
+            </div>
+          )}
+
+          {activeSection === 'profile' && (
+            <div className='max-h-164 overflow-y-auto'>
+            <div className="bg-gradient-to-r  from-blue-600 to-blue-800 text-white">
+              <div className="container mx-auto px-4 py-12">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-6 pl-8 pr-10">
+                  <div className="flex-grow text-center md:text-left ">
+                      <h1 className="text-3xl font-bold">{profile.firstName} {profile.lastName}</h1>
+                      <p className="text-xl mt-2">{profile.jobTitle} at {profile.company || 'Unspecified'}</p>
+                      <p className="mt-1 text-blue-100">
+                          {profile.degreeProgram} in {profile.major}, Class of {profile.graduationYear}
+                      </p>
+                      
+                      {/* Contact Information */}
+                      <p className="mt-4 text-white">Phone: {profile.phone || 'Not available'}</p>
+                      <p className="mt-2 text-white">Email: {profile.email || 'Not available'}</p>
+                  </div>
+      
+                  {/* Profile Image */}
+                  <div className='flex justify-center items-center ml-24'>
+                    <div className="w-50 h-50 rounded-full overflow-hidden border-2 border-white shadow-md">
+                        <Image
+                          src="/alumni.png"
+                          alt="User Avatar"
+                          width={200}
+                          height={200}
+                          className="object-cover"
+                          />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Tab navigation */}
+            <div className="bg-white shadow">
+              <div className="container mx-auto px-4">
+                <div className="flex space-x-6 overflow-x-auto">
+                  <button 
+                    className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                      activeTab === 'personal' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                    onClick={() => setActiveTab('personal')}
+                  >
+                    Personal Information
+                  </button>
+                  <button 
+                    className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                      activeTab === 'education' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                    onClick={() => setActiveTab('education')}
+                  >
+                    Education
+                  </button>
+                  <button 
+                    className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                      activeTab === 'career' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                    onClick={() => setActiveTab('career')}
+                  >
+                    Career
+                  </button>
+                  <button 
+                    className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                      activeTab === 'social' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+                    }`}
+                    onClick={() => setActiveTab('social')}
+                  >
+                    Social Media
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Content area */}
+            <div className="container mx-auto px-4 py-8">
+              <div className="bg-white rounded-lg shadow p-6">
+                {/* Personal Information */}
+                {activeTab === 'personal' && (
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-gray-800">Personal Information</h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="flex items-start">
+                        <Mail className="w-5 h-5 mt-1 text-blue-500 mr-3" />
+                        <div>
+                          <p className="text-sm text-gray-500">Email</p>
+                          <p className="text-gray-800">{profile.email}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start">
+                        <Phone className="w-5 h-5 mt-1 text-blue-500 mr-3" />
+                        <div>
+                          <p className="text-sm text-gray-500">Phone</p>
+                          <p className="text-gray-800">{profile.phone || 'Not provided'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start">
+                        <User className="w-5 h-5 mt-1 text-blue-500 mr-3" />
+                        <div>
+                          <p className="text-sm text-gray-500">Gender</p>
+                          <p className="text-gray-800">{profile.gender || 'Not specified'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start">
+                        <Calendar className="w-5 h-5 mt-1 text-blue-500 mr-3" />
+                        <div>
+                          <p className="text-sm text-gray-500">Date of Birth</p>
+                          <p className="text-gray-800">{profile.dateOfBirth ? formatDate(profile.dateOfBirth) : 'Not provided'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Education */}
+                {activeTab === 'education' && (
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-gray-800">Education</h2>
+                    
+                    <div className="bg-blue-50 rounded-lg p-6 border border-blue-100">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between">
+                        <div>
+                          <div className="flex items-center">
+                            <GraduationCap className="w-6 h-6 text-blue-600 mr-2" />
+                            <h3 className="text-xl font-semibold text-gray-800">{profile.degreeProgram}</h3>
+                          </div>
+                          <p className="mt-2 text-gray-600">
+                            Major: {profile.major}
+                          </p>
+                        </div>
+                        <div className="mt-4 md:mt-0">
+                          <span className="inline-block bg-blue-600 text-white px-3 py-1 rounded-full font-medium">
+                            Class of {profile.graduationYear}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 bg-gray-50 rounded border border-gray-200">
+                      <p className="italic text-gray-600 text-sm">
+                        This alumni has not added any additional education information.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Career */}
+                {activeTab === 'career' && (
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-gray-800">Career Information</h2>
+                    
+                    {profile.company ? (
+                      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                        <div className="flex items-start">
+                          <Briefcase className="w-6 h-6 text-blue-600 mr-3 mt-1" />
+                          <div>
+                            <h3 className="text-xl font-semibold text-gray-800">{profile.jobTitle}</h3>
+                            <p className="text-gray-600">{profile.company}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4 bg-gray-50 rounded border border-gray-200">
+                        <p className="italic text-gray-600">
+                          No career information provided.
+                        </p>
+                      </div>
+                    )}
+                    
+                    <div className="mt-6">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-4">Career Timeline</h3>
+                      <p className="text-gray-600 italic">
+                        Career timeline information is not available.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Social Media */}
+                {activeTab === 'social' && (
+                  <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-gray-800">Social Media</h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {profile.linkedinUrl && (
+                        <a 
+                          href={profile.linkedinUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors"
+                        >
+                          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <Linkedin className="w-6 h-6 text-blue-800" />
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-800">LinkedIn</h3>
+                            <p className="text-sm text-gray-500 truncate">{profile.linkedinUrl}</p>
+                          </div>
+                        </a>
+                      )}
+                      
+                      {profile.twitterUrl && (
+                        <a 
+                          href={profile.twitterUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors"
+                        >
+                          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <Twitter className="w-6 h-6 text-blue-800" />
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-800">Twitter</h3>
+                            <p className="text-sm text-gray-500 truncate">{profile.twitterUrl}</p>
+                          </div>
+                        </a>
+                      )}
+                      
+                      {profile.facebookUrl && (
+                        <a 
+                          href={profile.facebookUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors"
+                        >
+                          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <Facebook className="w-6 h-6 text-blue-800" />
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-800">Facebook</h3>
+                            <p className="text-sm text-gray-500 truncate">{profile.facebookUrl}</p>
+                          </div>
+                        </a>
+                      )}
+                      
+                      {profile.instagramUrl && (
+                        <a 
+                          href={profile.instagramUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition-colors"
+                        >
+                          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <Instagram className="w-6 h-6 text-blue-800" />
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-gray-800">Instagram</h3>
+                            <p className="text-sm text-gray-500 truncate">{profile.instagramUrl}</p>
+                          </div>
+                        </a>
+                      )}
+                    </div>
+                    
+                    {!profile.linkedinUrl && !profile.twitterUrl && !profile.facebookUrl && !profile.instagramUrl && (
+                      <div className="p-4 bg-gray-50 rounded border border-gray-200">
+                        <p className="italic text-gray-600">
+                          No social media profiles have been linked.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
             </div>
           )}
 
