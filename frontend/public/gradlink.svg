@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Graduation cap with "currentColor" for easy color changes -->
+  <polygon points="100,50 170,85 100,120 30,85" fill="currentColor" />
+  <rect x="40" y="110" width="120" height="15" fill="currentColor" />
+  <line x1="100" y1="120" x2="100" y2="150" stroke="currentColor" stroke-width="6" />
+  
+  <!-- Tassel -->
+  <path d="M170,85 C180,100 165,115 155,125" stroke="currentColor" stroke-width="4" fill="none" />
+  <circle cx="155" cy="125" r="6" fill="currentColor" />
+</svg>

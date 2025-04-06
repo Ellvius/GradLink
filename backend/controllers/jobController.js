@@ -115,7 +115,7 @@ class JobController {
     try {
       const userId = req.user.id; // Get logged-in user ID
       const jobId = req.params.jobId; // Get job ID from request params
-
+      // console.log(userId);
       // Ensure only students can apply
       if (req.user.role !== 'student') {
         return res.status(403).json({ error: 'Only students can apply for jobs' });
@@ -133,7 +133,7 @@ class JobController {
       });
 
       if (existingApplication) {
-        return res.status(400).json({ error: 'You have already applied for this job' });
+        return res.status(201).json({ message: 'You have already applied for this job' });
       }
 
       // Create a new application
