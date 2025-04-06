@@ -93,7 +93,7 @@ const AlumniDashboard = () => {
         setLoading(prev => ({ ...prev, events: false }));
       } catch (err) {
         console.error('Error fetching user events:', err);
-        setError(prev => ({ ...prev, events: 'Failed to load event.Event data' }));
+        setError(prev => ({ ...prev, events: 'Failed to load event.Event? data' }));
         setLoading(prev => ({ ...prev, events: false }));
       }
     };
@@ -368,23 +368,20 @@ console.log(displayUser);
                       <div className="text-red-500 text-center py-4">{error.events}</div>
                     ) : (
                       <div className="space-y-4">
-                        {displayEvents.slice(0, 3).map(event => (
-                          <div key={event.Event.id} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
-                            <h4 className="font-medium text-lg text-gray-800">{event.Event.title}</h4>
-                            <p className="text-md text-gray-500">
+
+                        {displayEvents.slice(0, 3).map((event, index) => (
+                          <div key={index} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                            <h4 className="font-medium text-lg text-gray-800">{event?.Event?.title}</h4>
                                <p className="text-md text-gray-500">
-                                {format(new Date(event.Event.startDateTime), "yyyy-MM-dd")}
+                                {event?.Event?.startDateTime && format(new Date(event?.Event?.startDateTime), "dd/MM/yyyy") }
                               </p>
-                            </p>
                             <div className="flex justify-between items-center mt-1">
                               <span className="text-md text-gray-500">
-                                {event.Event.location}
+                                {event?.Event?.location}
                               </span>
-                              <button className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs hover:bg-blue-200">
-                                RSVP
-                              </button>
                             </div>
                           </div>
+                          
                         ))}
                       </div>
                     )}
@@ -423,7 +420,7 @@ console.log(displayUser);
                             <p className="text-md text-gray-600">{job.companyName} • {job.location}</p>
                             <div className="flex justify-between items-center mt-1">
                               <span className="text-md text-gray-500">
-                                Posted: {format(new Date(job.createdAt), "yyyy-MM-dd")}
+                                Posted: {format(new Date(job.createdAt), "dd/MM/yyyy")}
                               </span>
                             </div>
                           </div>

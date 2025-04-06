@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -8,7 +8,15 @@ import GradlinkIcon from '../Icon/GradLinkIcon';
 
 const Navbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [role, setRole] = useState(null); // State to store the role
   const router = useRouter();
+
+  // Fetch role from localStorage only in the client
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setRole(localStorage.getItem("role"));
+    }
+  }, []);
 
   const toggleProfileDropdown = () => {
     setIsProfileOpen((prev) => !prev);
@@ -16,13 +24,15 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.clear();
-    router.push('/auth/login');
+    router.push("/auth/login");
   };
 
-  const role = localStorage.getItem('role');
   const goToDashboard = () => {
-    if(!role) alert('Please login to view dashboard');
-    if (role) router.push(`/${role}`);
+    if (!role) {
+      alert("Please login to view the dashboard");
+    } else {
+      router.push(`/${role}`);
+    }
   };
 
   return (
@@ -52,9 +62,19 @@ const Navbar = () => {
             </button>
             {isProfileOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-gray-800 py-1 z-10">
-                {role === 'alumni' && (<Link href="/alumni/profile" className="block px-4 py-2 text-sm text-white hover:bg-gray-400">View Profile</Link>)}
-                
-                <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-400">
+                {role === "alumni" && (
+                  <Link
+                    href="/alumni/profile"
+                    className="block px-4 py-2 text-sm text-white hover:bg-gray-400"
+                  >
+                    View Profile
+                  </Link>
+                )}
+
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-400"
+                >
                   Logout
                 </button>
               </div>

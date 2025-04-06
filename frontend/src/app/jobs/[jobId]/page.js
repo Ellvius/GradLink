@@ -11,6 +11,7 @@ export default function JobDetails() {
   const router = useRouter();
   const [job, setJob] = useState(null);
   const [user, setUser] = useState(null);
+
   const [token, setToken] = useState(null);
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function JobDetails() {
   useEffect(() => {
     if (token && jobId) {
       axios.get(`http://localhost:5000/api/jobs/${jobId}`, {
+
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
@@ -40,6 +42,7 @@ export default function JobDetails() {
         .catch((err) => console.error("Error fetching user:", err));
     }
   }, [token, jobId]);
+
 
   const handleApply = async () => {
     try {
