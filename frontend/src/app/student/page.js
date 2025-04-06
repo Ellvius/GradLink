@@ -265,13 +265,10 @@ const StudentDashBoard = () => {
                     <Calendar className="mr-2 text-blue-600" size={18} />
                     My Events
                   </h3>
-                  <div className="flex space-x-4">
-                    <button onClick={()=>router.push("/events")} className="text-sm text-blue-600 hover:underline">View All</button>
-                  </div>
                 </div>
 
                   
-                  <div className="p-4">
+                <div className="p-4">
                     {loading.events ? (
                       <div className="flex justify-center items-center h-32">
                         <Loader2 className="animate-spin text-blue-600" size={24} />
@@ -279,13 +276,15 @@ const StudentDashBoard = () => {
                     ) : error.events ? (
                       <div className="text-red-500 text-center py-4">{error.events}</div>
                     ) : (
-                      <div className="space-y-4">
-                        {displayEvents.slice(0, 3).map((event, index) => (
+                      // Scrollable container with max height (showing about 3 items)
+                      <div className="space-y-4 max-h-76 overflow-y-auto pr-2">
+                        {displayEvents.map((event, index) => (
                           <div key={index} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                             <h4 className="font-medium text-lg text-gray-800">{event?.Event?.title}</h4>
-                               <p className="text-md text-gray-500">
-                                {event?.Event?.startDateTime && format(new Date(event?.Event?.startDateTime), "yyyy-MM-dd")}
-                              </p>
+                            <p className="text-md text-gray-500">
+                              {event?.Event?.startDateTime &&
+                                format(new Date(event?.Event?.startDateTime), "yyyy-MM-dd")}
+                            </p>
                             <div className="flex justify-between items-center mt-1">
                               <span className="text-md text-gray-500">
                                 {event?.Event?.location}
@@ -318,8 +317,8 @@ const StudentDashBoard = () => {
                     ) : error.jobs ? (
                       <div className="text-red-500 text-center py-4">{error.jobs}</div>
                     ) : (
-                      <div className="space-y-4">
-                        {displayJobs.slice(0, 3).map((job, index) => (
+                      <div className="space-y-4 max-h-76 overflow-y-auto pr-2">
+                        {displayJobs.map((job, index) => (
                           <div key={index} className="flex items-start justify-between border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                             <div>
                               <h4 className="font-medium text-gray-800">{job?.JobPosting?.jobTitle}</h4>

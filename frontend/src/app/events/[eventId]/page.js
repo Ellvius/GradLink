@@ -78,21 +78,21 @@ const EventDetailPage = () => {
       <div className="container mx-auto p-6 max-w-4xl">
 
         {/* Event Header */}
-        <div className="bg-blue-50 p-6 rounded-lg mb-6">
-          <h1 className="text-3xl font-bold mb-4 text-gray-900">{event?.title}</h1>
+        <div className="bg-blue-100 p-6 rounded-lg mb-6">
+          <h1 className="text-3xl font-bold mb-8 text-gray-900">{event?.title}</h1>
 
           {/* Event Meta Information */}
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-3 gap-4 text-xl">
             <div className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5 text-blue-500" />
+              <Calendar className="h-8 w-8 text-blue-500" />
               <span className="font-bold text-gray-700">{event && format(new Date(event?.startDateTime), "dd/MM/yyyy")}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-green-500" />
+              <Clock className="h-8 w-8 text-green-500" />
               <span className="text-gray-700">{event && format(new Date(event?.startDateTime), "HH:mm")}</span>
             </div>
             <div className="flex items-center space-x-2">
-              <MapPin className="h-5 w-5 text-red-500" />
+              <MapPin className="h-8 w-8 text-red-500" />
               <span className="text-gray-700">{event?.location}</span>
             </div>
           </div>
@@ -103,7 +103,7 @@ const EventDetailPage = () => {
           <button
             onClick={handleRegister}
             disabled={isRegistered || event.registeredUsers >= event.totalCapacity}
-            className={`flex-1 py-3 rounded transition-colors ${
+            className={`flex-1 py-3 rounded transition-colors text-xl font-bold ${
               isRegistered
                 ? "bg-green-500 text-white"
                 : "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400"
@@ -127,29 +127,25 @@ const EventDetailPage = () => {
         {/* Event Description */}
         <div className="mb-6">
           <h2 className="text-2xl font-semibold mb-4">Event Description</h2>
-          <p className="text-gray-700 leading-relaxed whitespace-pre-line">{event?.description}</p>
+          <p className="text-gray-700 text-xl leading-relaxed whitespace-pre-line">{event?.description}</p>
         </div>
 
         {/* Registration Info */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-semibold mb-4">Capacity</h2>
-          <span className="font-bold text-xl text-blue">
-                {event?.capacity}
-              </span>
-        </div>
-
-        {/* Prerequisites */}
-        
-
-        {/* Organizer Info */}
-        {/* <div>
-          <h2 className="text-2xl font-semibold mb-4">Organizer Contact</h2>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-gray-800 font-medium">{event?.organizerInfo?.name}</p>
-            <p className="text-gray-600">Email: {event?.organizerInfo?.contact}</p>
-            <p className="text-gray-600">Phone: {event?.organizerInfo?.phone}</p>
+        <div className="flex gap-4">
+          <div className="mb-6 bg-blue-100 p-4 rounded-sm text-center">
+            <h2 className="text-2xl font-semibold mb-4">Capacity</h2>
+            <span className="font-bold text-xl text-blue">
+                  {event?.capacity}
+                </span>
           </div>
-        </div> */}
+
+          <div className="mb-6  bg-blue-100 p-4 rounded-sm text-center">
+            <h2 className="text-2xl font-semibold mb-4">Registered</h2>
+            <span className="font-bold text-xl text-blue ">
+                  {event?.EventRegistrations.length}/{event?.capacity}
+                </span>
+          </div>
+        </div>
       </div>
     </div>
       <Footer className="mt-12" /></>

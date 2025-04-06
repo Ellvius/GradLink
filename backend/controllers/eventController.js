@@ -126,7 +126,7 @@ class EventController {
       });
 
       if (existingRegistration) {
-        return res.status(400).json({ error: 'Already registered for this event' });
+        return res.status(201).json({ message: 'Already registered for this event' });
       }
 
       // Create registration
