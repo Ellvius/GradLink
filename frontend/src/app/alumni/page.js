@@ -191,6 +191,10 @@ const AlumniDashboard = () => {
     router.push("/jobs/create");
   }
 
+  const editJob = (jobId) =>{
+    router.push(`/jobs/edit/${jobId}`);
+  }
+
   // Use actual data if available, otherwise use fallback
   const displayUser = user ;
   const displayEvents = userEvents;
@@ -396,7 +400,7 @@ const AlumniDashboard = () => {
                         {displayJobs
                         .filter(job => job.poster.id === displayUser.userId)
                         .map(job => ( 
-                          <div key={job.id} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                          <div onClick={()=>editJob(job.id)} key={job.id} className="border-b border-gray-100 pb-3 last:border-0 last:pb-0">
                             <h4 className="font-medium text-gray-800">{job.jobTitle}</h4>
                             <p className="text-md text-gray-600">{job.companyName} • {job.location}</p>
                             <div className="flex justify-between items-center mt-1">

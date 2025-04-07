@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const AlumniProfile = require('../models/alumni-profile');
 const { Op } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const { generateAuthToken } = require('../middleware/authMiddleware');
@@ -113,6 +114,54 @@ class UserController {
       res.status(400).json({ error: error.message });
     }
   }
+
+  // Search Alumni Profiles
+async searchProfiles(req, res) {
+  try {
+    const { name, graduationYear, company } = req.query;
+    console.log(req.query);
+    // Build the where clause based on search parameters
+    const whereClause = {};
+    
+    if (name) {
+      whereClause[Op.or] = [
+        { firstName: { [Op.iLike]: `%${name}%` } },
+        { lastName: { [Op.iLike]: `%${name}%` } }
+      ];
+    }
+    
+    if (graduationYear) {
+      whereClause.graduationYear = graduationYear;
+    }
+    
+    if (company) {
+      whereClause.company = { [Op.iLike]: `%${company}%` };
+    }
+    
+    // Find alumni profiles that match the criteria
+    const alumni = await AlumniProfile.findAll({
+      where: whereClause,
+      order: [['lastName', 'ASC'], ['firstName', 'ASC']],
+      attributes: [
+        'id', 'firstName', 'lastName', 'graduationYear', 
+        'degreeProgram', 'major', 'company', 'jobTitle', 'privacySettings','email','phone'
+      ]
+    });
+    
+    // Only return public profiles unless user has admin role
+    const filteredAlumni = req.user?.role === 'admin' 
+      ? alumni 
+      : alumni.filter(profile => profile.privacySettings === 'public');
+    
+    res.json({
+      alumni: filteredAlumni,
+      total: filteredAlumni.length
+    });
+  } catch (error) {
+    console.error('Error searching alumni profiles:', error);
+    res.status(500).json({ error: error.message });
+  }
+}
 
   // Change user password
   async changePassword(req, res) {
