@@ -53,6 +53,7 @@ const Navbar = () => {
           {/* <Link href="/forums" className="hover:text-gray-300 transition">Forums</Link> */}
           <Link href="/jobs" className="hover:text-gray-300 transition">Jobs & Internships</Link>
           <Link href="/events" className="hover:text-gray-300 transition">Events</Link>
+          <Link href="/alumni/search" className="hover:text-gray-300 transition">Search</Link>
           
           <div className="relative">
             <button onClick={toggleProfileDropdown} className="flex items-center hover:text-gray-300 focus:outline-none">

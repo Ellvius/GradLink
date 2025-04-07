@@ -19,7 +19,9 @@ router.patch('/change-password', authenticateUser, userController.changePassword
 // Deactivate user account (PATCH for clarity)
 router.patch('/deactivate-account', authenticateUser, userController.deactivateAccount);
 
+router.get('/search', userController.searchProfiles);
 // List all users (Admin only)
 router.get('/', authenticateUser, authorizeRoles('admin'), userController.listUsers);
+
 
 module.exports = router;
